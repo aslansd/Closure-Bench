@@ -20,13 +20,18 @@ if sys.prefix == sys.base_prefix:
     print("  note: not running inside a virtual environment (run scripts/setup_venv.sh, then use .venv/bin/python)")
 if sys.version_info < (3, 11):
     print("  WARNING: Python >= 3.11 required (3.12 recommended)")
-for mod in ["numpy", "scipy", "matplotlib", "h5py", "jax", "optax", "wormneuroatlas", "nbformat"]:
+for mod in ["numpy", "scipy", "matplotlib", "h5py", "jax", "optax", "wormneuroatlas", "nbformat", "brian2"]:
     try:
         m = __import__(mod)
         print(f"  ok   {mod:15s} {getattr(m, '__version__', '')}")
     except ImportError as e:
         ok = False
         print(f"  MISSING {mod}: {e}")
+    except Exception as e:   # e.g. Brian2 2.9 with NumPy >= 2.4 ('ndarray' has no attribute 'ptp')
+        ok = False
+        print(f"  BROKEN  {mod}: {type(e).__name__}: {e}")
+        if mod == "brian2":
+            print("          fix: .venv/bin/pip install 'numpy==2.3.5'  (Python 3.11), or use Python 3.12+ with brian2 2.10")
 if not ok:
     sys.exit("Install the missing packages: scripts/setup_venv.sh (or .venv/bin/pip install -r requirements-lock.txt)")
 import numpy as np, jax

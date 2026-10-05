@@ -12,6 +12,7 @@ matplotlib==3.10.8
 pandas==3.0.2
 openpyxl==3.1.5
 wormneuroatlas==0.0.7.3
+brian2==2.10.1          # E2 substrate (Notebook 05)
 # notebooks
 jupyterlab>=4.2
 ipykernel>=6.29

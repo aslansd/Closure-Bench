@@ -5,13 +5,14 @@
 jax==0.10.2
 jaxlib==0.10.2
 optax==0.2.8
-numpy==2.4.4
+numpy==2.3.5            # NOT 2.4+: Brian2 2.9 (newest for Python 3.11) needs ndarray.ptp, removed in NumPy 2.4
 scipy==1.17.1
 h5py==3.16.0
 matplotlib==3.10.8
 pandas==3.0.2
 openpyxl==3.1.5
 wormneuroatlas==0.0.7.3
+brian2==2.9.0           # E2 substrate (Notebook 05); 2.10 needs Python >= 3.12
 # notebooks
 jupyterlab>=4.2
 ipykernel>=6.29

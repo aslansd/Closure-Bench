@@ -40,7 +40,7 @@ source .venv/bin/activate
 jupyter lab
 ```
 
-Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04.
+Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05.
 
 **4. Long runs (Notebooks 02 and 04): run them headless.** The script uses `.venv` automatically; you don't need to activate it.
 
@@ -97,6 +97,7 @@ An Apple Silicon laptop should be similar or faster. Of the rungs, the black box
 | 02 Synthetic worms | does the pipeline recover a known closed level? power for L2 vs L3 | laptop mode: hours |
 | 03 Real data pipeline | atlas → `Dataset`; anatomy vs function; noise ceiling; unc-31 peptide test | CPU, 2 min |
 | 04 E1 on real data | pre-registration, cross-validated ladder, registered decision, compression-cost curve | laptop mode: overnight |
+| 05 E2 substrate transfer | fitted L* on RK4, Brian2 and fixed-point substrates; degeneracy; Lyapunov exponent | laptop mode: ~15 min |
 
 Long runs checkpoint after every fit to `results/`, so re-running resumes where a run stopped. Set `CLOSUREBENCH_RESULTS` to store results elsewhere.
 
