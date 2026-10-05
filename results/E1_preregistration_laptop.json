@@ -1,0 +1,57 @@
+{
+  "experiment": "E1 closure ladder",
+  "mode": "laptop",
+  "registered_at": "2026-10-04T15:55:21.290799Z",
+  "data": {
+    "source": "wormneuroatlas (Randi et al. 2023 + compiled connectomes)",
+    "sha256": "4db19a06e0b3f377c9c41b633ddb0fa435aa24997416cb73f660043c77c115d5",
+    "N": 120,
+    "S": 120,
+    "strains": [
+      "wt",
+      "unc31"
+    ]
+  },
+  "config": {
+    "levels": [
+      "L0",
+      "L1",
+      "L2",
+      "L3",
+      "L4",
+      "B"
+    ],
+    "k_folds": 5,
+    "steps": 250,
+    "lr": 0.02,
+    "protocol": "pairs",
+    "equal_budget": true,
+    "restarts": 3,
+    "fold_seed": 0,
+    "threshold": 0.05,
+    "n_boot": 2000,
+    "tie_classes": true,
+    "n_neurons": 120,
+    "sim": {
+      "dt": 0.2,
+      "t_burn": 30.0,
+      "t_stim": 1.0,
+      "t_win": 20.0,
+      "k": 4.0
+    }
+  },
+  "primary_metric": "pooled FEVE on held-out (responder, stimulus) pairs, k-fold CV over pairs, all observed pairs, both strains",
+  "fitting": "nested warm-start chain L1->L4; L1 best of `restarts` initialisations; equal total optimisation budget for all rungs",
+  "decision_rule": "L* = lowest rung L such that (i) for every deeper rung L', the 97.5th percentile of the bootstrap (resampling stimulated neurons) distribution of FEVE(L') - FEVE(L) is < threshold (0.05), and (ii) the 2.5th percentile of FEVE(L) is > 0. If none qualifies: no closure within the ladder.",
+  "blackbox_rule": "B beats L* if the 2.5th percentile of FEVE(B) - FEVE(L*) > 0.05 (outcome C signature).",
+  "secondary": [
+    "FEVE restricted to significant pairs (atlas q<0.05)",
+    "FEVE per strain",
+    "unc31-specific gain of L3 over L2",
+    "whole-stimulus holdout protocol (same rule)"
+  ],
+  "validation": "synthetic recovery (Notebook 02) must be reported alongside the result",
+  "exploratory": [
+    "residual structure vs peptidergic in-degree"
+  ]
+}

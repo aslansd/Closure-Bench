@@ -1,0 +1,19 @@
+# Exact versions Closure-Bench was tested with (Python 3.12; also resolves on 3.13).
+# All have prebuilt wheels for macOS Apple Silicon (arm64), Linux and Windows: nothing compiles.
+#   python3.12 -m venv .venv && .venv/bin/pip install -r requirements-lock.txt
+# (or simply: scripts/setup_venv.sh)
+jax==0.11.2
+jaxlib==0.11.2
+optax==0.2.8
+numpy==2.4.4
+scipy==1.17.1
+h5py==3.16.0
+matplotlib==3.10.8
+pandas==3.0.2
+openpyxl==3.1.5
+wormneuroatlas==0.0.7.3
+# notebooks
+jupyterlab>=4.2
+ipykernel>=6.29
+nbconvert>=7.16
+nbformat>=5.10

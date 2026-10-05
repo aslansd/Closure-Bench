@@ -1,0 +1,19 @@
+# Exact versions for Python 3.11 (JAX 0.11 needs Python >= 3.12). Same as requirements-lock.txt except JAX.
+# All have prebuilt wheels for macOS Apple Silicon (arm64), Linux and Windows: nothing compiles.
+#   python3.11 -m venv .venv && .venv/bin/pip install -r requirements-lock-py311.txt   (or: scripts/setup_venv.sh)
+# (or simply: scripts/setup_venv.sh)
+jax==0.10.2
+jaxlib==0.10.2
+optax==0.2.8
+numpy==2.4.4
+scipy==1.17.1
+h5py==3.16.0
+matplotlib==3.10.8
+pandas==3.0.2
+openpyxl==3.1.5
+wormneuroatlas==0.0.7.3
+# notebooks
+jupyterlab>=4.2
+ipykernel>=6.29
+nbconvert>=7.16
+nbformat>=5.10

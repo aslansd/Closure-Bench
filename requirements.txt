@@ -1,0 +1,15 @@
+# Version ranges (newest compatible releases). Prefer requirements-lock.txt for reproducibility.
+# Python 3.11-3.13 (3.12 recommended). Tested exact versions: requirements-lock.txt (3.12/3.13), requirements-lock-py311.txt (3.11).
+jax>=0.4.30
+optax>=0.2.2
+numpy>=1.26
+scipy>=1.11
+matplotlib>=3.8
+h5py>=3.10
+pandas>=2.0
+openpyxl
+wormneuroatlas>=0.0.7
+jupyterlab>=4.2
+ipykernel>=6.29
+nbconvert>=7.16
+nbformat>=5.10
