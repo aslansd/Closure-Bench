@@ -16,5 +16,6 @@ drift_time  : E3d/E3e - time structure of the drift (wander vs return), online d
 embodiment  : E4a - brain alone vs brain + body as a closed system (autonomous rollouts).
 spiking     : E2b - spiking (LIF / Poisson, NEF-compiled) realizations of the fitted L1.
 conductance : E2c - conductance-based (shunting) synapse realization of the fitted L1.
+intrinsic   : E2d - slow intrinsic (K+-like) currents in the substrate; timescale separation.
 """
-__version__ = "0.15.0"
+__version__ = "0.16.0"

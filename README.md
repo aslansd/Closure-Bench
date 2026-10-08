@@ -40,7 +40,7 @@ source .venv/bin/activate
 jupyter lab
 ```
 
-Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17.
+Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18.
 
 **4. Long runs (Notebooks 02 and 04): run them headless.** The script uses `.venv` automatically; you don't need to activate it.
 
@@ -110,6 +110,7 @@ An Apple Silicon laptop should be similar or faster. Of the rungs, the black box
 | 15 E4a brain or brain + body? | does modelling the body as part of a closed system improve autonomous forecasts of the brain, beyond shifted behavior? does the observed body carry information the closed model cannot generate? | laptop mode: ~30–60 s per recording |
 | 16 E2b spiking realization | how many spiking neurons (LIF, Poisson; NEF-compiled) does one graded unit of the fitted L1 need before its interventional responses match? | laptop mode: ~1–2 h (dominated by spiking LIF at M = 1000); needs the Notebook 04 fits |
 | 17 E2c conductance synapses | does the fitted L1 survive synapses that act through reversal potentials (shunting), with naive or leak-compensated compilation, across voltage scales? | laptop mode: ~10–20 min; needs the Notebook 04 fits |
+| 18 E2d slow intrinsic currents | how slow may a K+-like current in the substrate be (share ρ, time constant τ_n) before the fitted L1's interventional responses change? on current and conductance synapses | laptop mode: ~15–20 min; needs the Notebook 04 fits |
 
 Long runs checkpoint after every fit to `results/`, so re-running resumes where a run stopped. Set `CLOSUREBENCH_RESULTS` to store results elsewhere.
 
