@@ -1,0 +1,52 @@
+{
+  "experiment": "E1h consistent restart from the exact resting state",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T18:06:19.439959+00:00",
+  "source": "E1 fits (laptop)",
+  "amends": [
+    "E1f (Notebook 19)",
+    "E1g (Notebook 20)"
+  ],
+  "config": {
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "rho_A": [
+      0.0,
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.3,
+      0.45
+    ],
+    "rho_B": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.45,
+      0.6
+    ],
+    "tau_n_B": [
+      0.5,
+      1.0,
+      2.0,
+      5.0,
+      10.0,
+      20.0
+    ],
+    "n_boot": 2000,
+    "start": "exact fixed point (intrinsic.true_rest); fallback 300-s burn-in if not ok"
+  },
+  "EXPRESSIBLE*": "rescaled L1 == frozen-gate slow current, both from the fixed point, < 1e-6 (fold 0)",
+  "PROTOCOL_DEPENDENT": "L1 (zero + 30-s burn-in) vs L1* gap/noise >= 0.1 or |held-out dFEVE| >= 0.05 on some fold",
+  "SLOW_GAIN_SURVIVES": "B beats L1*, CI lower bound > 0",
+  "UNDERFIT_L1": "A beats L1*, CI lower bound > 0",
+  "ADAPTATION_DYNAMICS": "B beats A, CI lower bound > 0",
+  "VALID": "on L1*-generated null data neither A nor B beats L1* (CI lower <= 0)"
+}

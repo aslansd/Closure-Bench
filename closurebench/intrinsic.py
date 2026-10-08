@@ -64,3 +64,60 @@ def simulate_slow_k(e, stim_idx, cfg, V_rest, rho=0.3, tau_n=1.0, syn=None, h=0.
             a = _sig(e["k"] * (X[0] - e["theta"])); acc += 0.5 * (a + a_prev); a_prev = a
     mean = acc / n
     return e["gain"][:, None] * (mean[1:] - mean[0]).T
+
+
+# ------------------------------------------------------------- E1g (NB 20) ---
+def rescaled_l1(e, V_rest, rho):
+    """The tau_n -> infinity limit of simulate_slow_k, written as an ordinary L1.
+
+    With the slow gate frozen at rest (w = V_rest), simulate_slow_k's membrane is
+        tau dV/dt = -(1 - rho) V - rho V_rest + bias + W s + lap(G) + I,
+    which is exactly L1 with
+        tau' = tau / (1-rho), bias' = (bias - rho V_rest) / (1-rho),
+        W' = W / (1-rho), G' = G / (1-rho), amp' = amp / (1-rho):
+    same resting state, weaker effective leak for transients, i.e. stronger
+    recurrent amplification and slower responses.  It is a point INSIDE the L1
+    family, so a held-out gain from it means the fitted L1 was not at the best
+    point of its own family."""
+    s = 1.0 / (1.0 - rho)
+    out = dict(e)
+    out.update(tau=e["tau"] * s, bias=(e["bias"] - rho * V_rest) * s, W=e["W"] * s, G=e["G"] * s, amp=e["amp"] * s)
+    return out
+
+
+def simulate_l1_from(e, stim_idx, cfg, V0, h=0.02):
+    """substrates.simulate_numpy('rk4') for L1 parameters e, but starting from the
+    state V0 (with s at its steady value for V0) instead of zero -- the same start
+    simulate_slow_k uses.  Needed whenever the network may have more than one
+    resting state: from zero, a rescaled L1 can settle into a different attractor
+    than the fitted L1 (Notebook 20's failed EXPRESSIBLE check)."""
+    return simulate_slow_k(e, stim_idx, cfg, V0, rho=0.0, tau_n=1.0, h=h)
+
+
+def fixed_point_residual(e, V):
+    """max |dV/dt| * tau of L1 at state V (with s = its steady value): ~0 at a fixed point."""
+    s = _sig(e["k"] * (V - e["theta"]))
+    lap = V @ e["G"].T - e["G"].sum(1) * V
+    return float(np.abs(-V + e["bias"] + s @ e["W"].T + lap).max())
+
+
+def true_rest(e, V_init, tol=1e-10):
+    """L1's resting state solved exactly (Newton / hybrid root finding on
+    -V + bias + W s(V) + lap(V) = 0, starting from V_init), with its stability:
+    the largest real part of the eigenvalues of the full (V, s) Jacobian.
+    Returns dict(V, residual, max_real_eig, ok).  ok = solver converged, residual
+    < 1e-8 and the fixed point is stable (max_real_eig < 0)."""
+    from scipy.optimize import root
+    N = len(e["bias"]); G = e["G"]; gsum = G.sum(1)
+    def F(V):
+        s = _sig(e["k"] * (V - e["theta"]))
+        return -V + e["bias"] + e["W"] @ s + G @ V - gsum * V
+    sol = root(F, np.asarray(V_init, float).ravel(), tol=tol)
+    V = sol.x
+    s = _sig(e["k"] * (V - e["theta"])); ds = e["k"] * s * (1 - s)
+    tau = e["tau"][:, None]; ts = e["tau_s"]
+    J = np.block([[(-np.eye(N) + G - np.diag(gsum)) / tau, e["W"] / tau],
+                  [np.diag(ds) / ts, -np.eye(N) / ts]])
+    lam = float(np.linalg.eigvals(J).real.max())
+    res = float(np.abs(F(V)).max())
+    return dict(V=V, residual=res, max_real_eig=lam, ok=bool(sol.success and res < 1e-8 and lam < 0))
