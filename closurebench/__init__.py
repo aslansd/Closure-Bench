@@ -12,6 +12,8 @@ metrics  : noise-ceiling-normalised accuracy (FEVE), description length,
            bootstrap CIs and the pre-registered closure decision rule.
 drift    : E3/E3b program-vs-hardware forecasting tests on spontaneous activity.
 drift_kinds : E3c - which restricted change of the program explains the drift.
-drift_time  : E3d - time structure of the drift (wander vs return) and an online drift tracker.
+drift_time  : E3d/E3e - time structure of the drift (wander vs return), online drift tracker, colored-residual nulls.
+embodiment  : E4a - brain alone vs brain + body as a closed system (autonomous rollouts).
+spiking     : E2b - spiking (LIF / Poisson, NEF-compiled) realizations of the fitted L1.
 """
-__version__ = "0.12.0"
+__version__ = "0.14.0"

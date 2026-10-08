@@ -1,0 +1,19 @@
+{
+  "experiment": "E4a brain vs brain + body",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T08:48:44.864115+00:00",
+  "config": {
+    "MAX_FILES": null,
+    "KS": [
+      1,
+      5,
+      20
+    ],
+    "SHIFT": 0.37,
+    "cv": "10 interleaved blocks, 5 folds"
+  },
+  "BODY_CLOSES": "one-sided Wilcoxon mean_k(joint - joint_shift) > 0, p < 0.05, and median mean_k(joint - brain) > 0",
+  "BODY_INFORMATIVE": "one-sided Wilcoxon mean_k(open - open_shift) > 0, p < 0.05",
+  "BRAIN_DRIVES_BODY": "one-sided Wilcoxon mean_k((body_joint - body_ar) - shifted) > 0, p < 0.05",
+  "closure_share": "(joint - brain)/(open - brain) at k = 20 where open - brain > 0.01 (descriptive)"
+}

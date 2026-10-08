@@ -193,3 +193,34 @@ def tracker_scores(X, S, U=None, n_windows=8, taus=TRACK_TAUS, ridge="auto", val
     gap = sc["refit"] - sc["frozen"]
     return dict(**sc, gap=gap, absorbed=(sc["tracker"] - sc["frozen"]) / gap if gap > 1e-9 else float("nan"),
                 taus_chosen=chosen)
+
+
+# --------------------------------------- colored-residual control (NB 14) ---
+def colored_surrogate(X, S, U=None, cut_frames=100, ridge="auto", seed=0):
+    """Stationary surrogate whose residual noise has the real recording's FAST
+    autocorrelation.  The residuals of the frozen program fitted to the whole
+    recording are high-passed (components slower than `cut_frames` frames removed:
+    no drift), phase-randomised per neuron (same power spectrum above the cutoff,
+    new phases), and used to drive the frozen program instead of white noise.
+    Tests how much the online tracker gains from autocorrelated residuals alone.
+    Returns the z-scored surrogate, or None if unstable."""
+    rng = np.random.default_rng(seed)
+    S = DR._support(S)
+    lam = DR.choose_ridge(X, S, U) if ridge == "auto" else ridge
+    p = DR.fit_frozen([X], S, lam, [U] if U is not None else None)
+    R = np.diff(X, axis=0) - DR.predict_increments(p, X, U=U)
+    n = len(R); F = np.fft.rfft(R - R.mean(0), axis=0)
+    f = np.fft.rfftfreq(n)                                          # cycles per frame
+    F[f < 1.0 / cut_frames] = 0.0
+    ph = np.exp(2j * np.pi * rng.uniform(size=F.shape)); ph[0] = 1.0
+    E = np.fft.irfft(np.abs(F) * ph, n=n, axis=0)
+    Y = np.zeros_like(X); y = X[0].copy()
+    for t in range(len(X)):
+        Y[t] = y
+        if t == n:
+            break
+        u = 0.0 if U is None or p.get("C") is None else p["C"] @ U[t]
+        y = y + (-p["a"] * y + p["W"] @ np.tanh(y) + p["b"] + u) + E[t]
+        if not np.all(np.isfinite(y)) or np.abs(y).max() > 1e3:
+            return None
+    return (Y - Y.mean(0)) / (Y.std(0) + 1e-9)

@@ -1,0 +1,18 @@
+{
+  "experiment": "E3e drift or colored input",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T07:46:16.859119+00:00",
+  "config": {
+    "N_COL": 2,
+    "MAX_FILES": null,
+    "CUT": 100,
+    "CUT_SENS": [
+      50,
+      200
+    ],
+    "GAP_FLOOR": 0.005
+  },
+  "R1": "one-sided Wilcoxon gap_real - mean gap_colored > 0, p < 0.05",
+  "R2": "one-sided Wilcoxon mean slope_colored - slope_real > 0, p < 0.05",
+  "R3": "one-sided Wilcoxon (tracker-frozen)_real - mean over colored > 0, p < 0.05"
+}
