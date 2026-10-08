@@ -1,0 +1,38 @@
+{
+  "experiment": "E2b spiking realization",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T09:58:06.302461+00:00",
+  "source": "E1 fits (laptop)",
+  "config": {
+    "N_COLS": 40,
+    "folds": [
+      0,
+      1
+    ],
+    "grid": {
+      "lif_rate": [
+        10,
+        30,
+        100,
+        300,
+        1000
+      ],
+      "poisson": [
+        100,
+        1000,
+        10000,
+        100000
+      ],
+      "lif": [
+        30,
+        100,
+        300,
+        1000
+      ]
+    },
+    "reg": 0.01
+  },
+  "pass": "gap/noise < 0.1 and |dFEVE| < 0.05 vs ode (RK4 dt 0.02), every fold model used",
+  "SPIKING_TRANSFER": "lif passes at some M in the grid",
+  "compiler": "on/off encoders, intercepts U(+-0.95*8), rmax U(60,150) Hz, ridge 0.01*max rate, inputs clipped to +-8; poisson rmax 100 Hz"
+}
