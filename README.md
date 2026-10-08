@@ -40,7 +40,7 @@ source .venv/bin/activate
 jupyter lab
 ```
 
-Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16.
+Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17.
 
 **4. Long runs (Notebooks 02 and 04): run them headless.** The script uses `.venv` automatically; you don't need to activate it.
 
@@ -109,6 +109,7 @@ An Apple Silicon laptop should be similar or faster. Of the rungs, the black box
 | 14 E3e drift or colored input? | are E3's gap, staleness slope and tracker gain larger than in stationary surrogates driven by the real residuals' fast (< 1 min) autocorrelation? | laptop mode: ~1–1.5 min per recording; reuses Notebooks 12–13 checkpoints |
 | 15 E4a brain or brain + body? | does modelling the body as part of a closed system improve autonomous forecasts of the brain, beyond shifted behavior? does the observed body carry information the closed model cannot generate? | laptop mode: ~30–60 s per recording |
 | 16 E2b spiking realization | how many spiking neurons (LIF, Poisson; NEF-compiled) does one graded unit of the fitted L1 need before its interventional responses match? | laptop mode: ~1–2 h (dominated by spiking LIF at M = 1000); needs the Notebook 04 fits |
+| 17 E2c conductance synapses | does the fitted L1 survive synapses that act through reversal potentials (shunting), with naive or leak-compensated compilation, across voltage scales? | laptop mode: ~10–20 min; needs the Notebook 04 fits |
 
 Long runs checkpoint after every fit to `results/`, so re-running resumes where a run stopped. Set `CLOSUREBENCH_RESULTS` to store results elsewhere.
 
