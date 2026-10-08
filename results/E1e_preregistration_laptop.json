@@ -1,0 +1,35 @@
+{
+  "experiment": "E1e null-calibrated decision rule (synthetic)",
+  "mode": "laptop",
+  "registered_at": "2026-10-07T04:47:35.232313+00:00",
+  "config": {
+    "N_NEURONS": 60,
+    "REAL_WIRING": true,
+    "CAL_SEEDS": [
+      11,
+      12,
+      13
+    ],
+    "TEST_TRUTHS": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "TEST_SEEDS": [
+      1,
+      2
+    ],
+    "DESIGNS": [
+      "repeat",
+      "long"
+    ],
+    "K": 3,
+    "STEPS": 250,
+    "N_BOOT": 1000
+  },
+  "rule": "v4: rung needed if lower 95% CI bound of gain over best shallower rung > delta_design; closed = deepest needed",
+  "calibration": "delta_design = max over null worms (truth L1, CAL_SEEDS) of max lower bound of any deeper rung's gain; floor 0",
+  "valid": "on test worms, never deeper than the truth",
+  "useful": "valid and >= 1 exact hit on L2/L3 test worms",
+  "comparison": "long beats repeat if more exact hits on L2/L3 test worms and both valid"
+}

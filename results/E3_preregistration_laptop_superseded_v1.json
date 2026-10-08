@@ -1,0 +1,33 @@
+{
+  "experiment": "E3 program vs hardware",
+  "mode": "laptop",
+  "registered_at": "2026-10-07T10:11:14.122851+00:00",
+  "config": {
+    "N_NEURONS": 60,
+    "REAL_WIRING": true,
+    "T": 1600,
+    "NULL_SEEDS": [
+      11,
+      12,
+      13
+    ],
+    "TEST_SEEDS": [
+      1,
+      2,
+      3
+    ],
+    "META_STEPS": 3000,
+    "D_GRID": [
+      1,
+      2,
+      4
+    ],
+    "N_WINDOWS": 8,
+    "ABSORB_MIN": 0.5,
+    "D_MAX": 4
+  },
+  "gap_min": "max refit-frozen gap over stationary null worms, floor 0.005",
+  "classes": "stationary if gap < gap_min; else self_program if max_{d<=4} absorbed >= 0.5; else rewired",
+  "validity": "test worms: no stationary/rewired -> self_program; no stationary -> drifting; >= 2/3 self_program correct",
+  "real_data": "interpreted only if the pipeline is valid"
+}

@@ -1,0 +1,25 @@
+{
+  "experiment": "E1c identifiability and ensemble estimator",
+  "mode": "laptop",
+  "registered_at": "2026-10-06T14:37:04.246666+00:00",
+  "config": {
+    "N_NEURONS": 60,
+    "REAL_WIRING": true,
+    "TRUTHS": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "SEEDS": [
+      1
+    ],
+    "K": 3,
+    "STEPS": 250,
+    "N_BOOT": 1000,
+    "MEMBERS": 3,
+    "REAL_FISHER": true
+  },
+  "hit": "exact recovery: L* (sufficiency rule) == true rung",
+  "remedy_rule": "for truths L2, L3: ensemble hits > single hits; ensemble never deeper than truth; true-rung held-out FEVE ensemble > single for every truth",
+  "also_reported": "necessity bracket L_needed <= closed <= L* (metrics.necessity)"
+}

@@ -1,0 +1,60 @@
+{
+  "experiment": "E1d experimental design (synthetic validation)",
+  "mode": "laptop",
+  "registered_at": "2026-10-06T18:07:44.745445+00:00",
+  "config": {
+    "N_NEURONS": 60,
+    "REAL_WIRING": true,
+    "SCREEN_TRUTHS": [
+      "L2",
+      "L3",
+      "L4"
+    ],
+    "DESIGNS": [
+      "repeat",
+      "strong",
+      "weak",
+      "train",
+      "long",
+      "pairs",
+      "gapless",
+      "unc31"
+    ],
+    "VAL_TRUTHS": [
+      "L2",
+      "L3"
+    ],
+    "K": 3,
+    "STEPS": 250,
+    "N_BOOT": 1000,
+    "REAL_SCREEN": true
+  },
+  "chosen_design": {
+    "L2": "long",
+    "L3": "long"
+  },
+  "control": "repeat",
+  "success_rule": "with atlas + design: L_needed (necessity) == truth AND L* (sufficiency) == truth",
+  "screening_target_bits": {
+    "L2": {
+      "repeat": 1.6621372100448812,
+      "strong": 8.117904076854789,
+      "weak": 2.9180498771118595,
+      "train": 7.945139102373709,
+      "long": 15.331334932799333,
+      "pairs": 4.951365528981443,
+      "gapless": 6.31960881360002,
+      "unc31": 1.6621372120476958
+    },
+    "L3": {
+      "repeat": 4.762496108108013,
+      "strong": 17.140551713651316,
+      "weak": 2.17928000545852,
+      "train": 20.10157975606435,
+      "long": 33.64778824322433,
+      "pairs": 9.252234310370614,
+      "gapless": 6.6449861840603734,
+      "unc31": 6.0964894885858545
+    }
+  }
+}

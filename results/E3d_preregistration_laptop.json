@@ -1,0 +1,30 @@
+{
+  "experiment": "E3d wander or return",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T06:21:53.468996+00:00",
+  "config": {
+    "N_NULL": 2,
+    "MAX_FILES": null,
+    "K_WIN": 16,
+    "OU_TAU": 3.0,
+    "GAP_FLOOR": 0.005,
+    "ABSORB_MIN": 0.5,
+    "tau_grid_min": [
+      0.5,
+      240.0
+    ],
+    "track_taus": [
+      16,
+      32,
+      64,
+      128,
+      256,
+      512,
+      1024
+    ]
+  },
+  "detected": "gap >= max(GAP_FLOOR, max stationary-surrogate gap) (Notebook 12 checkpoints if present)",
+  "VALID": "one-sided paired Wilcoxon log tau_OU < log tau_RW over recordings, p < 0.05",
+  "RETURN": "one-sided paired Wilcoxon log tau_real < log tau_RW over detected, p < 0.05; read only if VALID",
+  "TRACKABLE": "median over detected of (tracker - frozen)/(refit - frozen) >= 0.5"
+}

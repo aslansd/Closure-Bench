@@ -24,6 +24,7 @@ class Dataset:
     var_mean: np.ndarray       # (n_strain, N, S) variance of the trial mean (noise)
     n: np.ndarray              # (n_strain, N, S) number of trials (0 = unobserved)
     meta: dict = field(default_factory=dict)
+    proto: dict = None         # optional per-column stimulus protocol: amp (S,), pair (S,), pattern (S,)
 
     @property
     def N(self):
@@ -37,12 +38,19 @@ class Dataset:
         """Observed (responder, stimulus) pairs, excluding the stimulated neuron itself."""
         m = self.n >= min_trials
         m[:, self.stim, np.arange(self.S)] = False
+        if self.proto is not None and "pair" in self.proto:      # second stimulated neuron, too
+            q = np.asarray(self.proto["pair"]); c = np.nonzero(q >= 0)[0]
+            m[:, q[c], c] = False
         return m
 
     def save(self, path):
         d = asdict(self)
         d["strains"] = np.array(self.strains)
         d["meta"] = np.array([repr(self.meta)])
+        if self.proto is None:
+            d.pop("proto")
+        else:
+            d["proto"] = np.array([{k: np.asarray(v) for k, v in self.proto.items()}], dtype=object)
         np.savez_compressed(path, **d)
 
     @staticmethod
@@ -51,6 +59,8 @@ class Dataset:
         d = {k: z[k] for k in z.files}
         d["strains"] = tuple(str(s) for s in d["strains"])
         d["meta"] = eval(str(d["meta"][0]), {"array": np.array, "nan": np.nan})
+        if "proto" in d:
+            d["proto"] = d["proto"][0]
         return Dataset(**d)
 
     def summary(self):
@@ -135,6 +145,50 @@ def load_atlas_dataset(strains=("wt", "unc31"), min_stim_trials=1, atlas=None):
                          "sigprop_version": getattr(a, "sigprop_v", "?")})
 
 
+def kernel_timecourses(strain="wt", t=None, atlas=None):
+    """Evaluate the atlas's fitted response kernels (Randi et al. 2023) on a time
+    grid.  Each kernel is a sum of terms factor * t**power * exp(-g * t), stored
+    as rows (g, factor, power, branch).  Returns (K, t) with K of shape
+    (300, 300, len(t)) indexed [post, pre, time]; NaN where no kernel was fitted.
+    Evaluated in float64 because some fits contain large cancelling terms."""
+    a = open_atlas() if atlas is None else atlas
+    t = np.arange(0.0, 30.0, 0.5) if t is None else np.asarray(t, float)
+    raw = a.funatlas_h5[strain]["kernels"]
+    N = len(a.neuron_ids)
+    K = np.full((N, N, len(t)), np.nan)
+    for i in range(N):
+        for j in range(N):
+            k = raw[i, j]
+            if k is None or len(k) == 0:
+                continue
+            k = np.asarray(k, float).reshape(-1, 4)
+            g, fac, pw = k[:, 0:1], k[:, 1:2], k[:, 2:3]
+            K[i, j] = (fac * np.where(pw == 0, 1.0, t[None] ** pw) * np.exp(-g * t[None])).sum(0)
+    return K, t
+
+
+def kernel_descriptors(K, t):
+    """Per-kernel shape descriptors on (..., T) arrays: signed peak value, time of
+    the absolute peak, and the 'late fraction' = share of |kernel| area after 10 s."""
+    absK = np.abs(K)
+    ipk = np.nanargmax(np.where(np.isfinite(absK), absK, -1), axis=-1)
+    peak = np.take_along_axis(K, ipk[..., None], -1)[..., 0]
+    area = np.nansum(absK, -1)
+    late = np.nansum(absK[..., t >= 10], -1) / np.where(area > 0, area, np.nan)
+    ok = np.isfinite(K).all(-1)
+    return (np.where(ok, peak, np.nan), np.where(ok, t[ipk], np.nan), np.where(ok, late, np.nan))
+
+
+def average_bins(ds: Dataset):
+    """Average a time-binned Dataset (trailing bin axis) over its bins: exactly
+    the window-mean data an E1-style experiment would record from the same trials."""
+    if ds.mean.ndim == 3:
+        return ds
+    B = ds.mean.shape[-1]
+    return Dataset(**{**ds.__dict__, "mean": ds.mean.mean(-1), "var_mean": ds.var_mean.mean(-1) / B,
+                      "meta": dict(ds.meta, averaged_from_bins=B)})
+
+
 def subset(ds: Dataset, keep):
     """Restrict a Dataset to neurons `keep` (indices); stimuli outside are dropped."""
     keep = np.asarray(keep)
@@ -145,4 +199,16 @@ def subset(ds: Dataset, keep):
                    pep=sub(ds.pep), stim=np.array([pos[ds.stim[s]] for s in cols], dtype=int),
                    strains=ds.strains, mean=ds.mean[:, keep][:, :, cols],
                    var_mean=ds.var_mean[:, keep][:, :, cols], n=ds.n[:, keep][:, :, cols],
-                   meta=dict(ds.meta, subset=len(keep)))
+                   meta=dict(ds.meta, subset=len(keep)),
+                   proto=_subset_proto(ds.proto, cols, pos))
+
+
+def _subset_proto(proto, cols, pos):
+    """Restrict a protocol to `cols`; remap paired-stimulation partners to the new
+    neuron indices (-1 if the partner was dropped)."""
+    if proto is None:
+        return None
+    out = {k: np.asarray(v)[cols] for k, v in proto.items()}
+    if "pair" in out:
+        out["pair"] = np.array([pos.get(int(q), -1) if q >= 0 else -1 for q in out["pair"]], dtype=np.int32)
+    return out

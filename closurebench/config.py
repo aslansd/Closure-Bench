@@ -43,10 +43,11 @@ def _time_fit(level, ds, n_steps, st, cfg, protocol, seed=0):
     step by step inside ONE fit (first step = compile + run; median of the rest)."""
     from . import ladder as lad
     from .data import Dataset
-    if not np.any(ds.mean):   # e.g. a synthetic template: timing needs non-zero dummy targets
+    shape = ds.n.shape + ((cfg.n_bins,) if cfg.n_bins > 1 else ())
+    if not np.any(ds.mean) or ds.mean.shape != shape:
+        # timing needs non-zero dummy targets with the configuration's time-bin axis
         rng = np.random.default_rng(0)
-        ds = Dataset(**{**ds.__dict__, "mean": rng.normal(0, 0.1, ds.mean.shape),
-                        "var_mean": np.full(ds.mean.shape, 1e-3)})
+        ds = Dataset(**{**ds.__dict__, "mean": rng.normal(0, 0.1, shape), "var_mean": np.full(shape, 1e-3)})
     kw = {}
     if protocol == "pairs":
         kw["train_mask"] = np.ones(ds.mask().shape, bool)

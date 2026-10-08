@@ -1,0 +1,26 @@
+{
+  "experiment": "E3c what kind of change is the drift",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T05:12:46.869014+00:00",
+  "config": {
+    "N_NULL": 2,
+    "MAX_FILES": null,
+    "N_WINDOWS": 8,
+    "GAP_FLOOR": 0.005,
+    "families": [
+      "bias",
+      "renorm",
+      "rescale",
+      "gain_global",
+      "gain_neuron",
+      "lowrank1",
+      "lowrank2",
+      "dense"
+    ]
+  },
+  "detected": "gap_bias >= max(GAP_FLOOR, max stationary-surrogate gap)",
+  "R1": "excess_F = (score_F - score_bias)_real - mean over stationary surrogates; one-sided Wilcoxon > 0 over detected; Holm over STRUCT; valid only if no family flagged on drive-drift surrogates",
+  "R1m": "same for renorm, rescale; Holm over 2",
+  "R2": "pc1_real - mean pc1_null > 0, one-sided Wilcoxon p < 0.05 over detected",
+  "R3": "Spearman(gap, sd_ratio) or Spearman(gap, mean_ratio) negative, Holm over 2, p < 0.05"
+}

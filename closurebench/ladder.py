@@ -48,6 +48,7 @@ class SimConfig:
     t_stim: float = 1.0      # s, optogenetic pulse
     t_win: float = 20.0      # s, response window after pulse onset
     k: float = 4.0           # slope of activation nonlinearities
+    n_bins: int = 1          # time bins in the response window (1 = window mean, as in E1)
 
     @property
     def n_burn(self):
@@ -56,6 +57,11 @@ class SimConfig:
     @property
     def n_win(self):
         return int(round(self.t_win / self.dt))
+
+    @property
+    def bin_len(self):
+        assert self.n_win % self.n_bins == 0, "n_win must be divisible by n_bins"
+        return self.n_win // self.n_bins
 
     @property
     def n_stim(self):
@@ -225,19 +231,20 @@ def trainable_count(level, st: Structure):
 
 
 # ------------------------------------------------------------- dynamics ---
-def _step(level, p, st, cfg, state, I, pep_on):
-    """One Euler step.  state: dict of (N,) arrays."""
+def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
+    """One Euler step.  state: dict of (N,) arrays.  pep_on / gap_on switch
+    neuropeptide release (unc-31) and gap junctions (e.g. unc-7/unc-9) off."""
     dt, k = cfg.dt, cfg.k
     v = state["v"]
     if level == "L0":
         W = p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk
-        lap = st.gap_norm @ v - st.gap_norm.sum(1) * v
+        lap = gap_on * (st.gap_norm @ v - st.gap_norm.sum(1) * v)
         dv = (-v + W @ v + sp(p["g_gap"]) * lap + I) / (TAU_MIN + sp(p["tau"]))
         return {"v": v + dt * dv}
     a = sig(k * (v - p["theta"]))
     W = p["W"] * st.chem_mask
     G = sp(0.5 * (p["G"] + p["G"].T)) * st.gap_norm   # row sums <= max conductance
-    lap = G @ v - G.sum(1) * v
+    lap = gap_on * (G @ v - G.sum(1) * v)
     cur = p["bias"] + W @ state["s"] + lap + I
     new = {}
     if level in ("L2", "L3", "L4"):
@@ -269,36 +276,71 @@ def _zero_state(level, N):
     return {n: jnp.zeros(N) for n in names}
 
 
+PATTERNS = ("single", "train", "long")   # temporal stimulus patterns (see pulse_patterns)
+
+
+def pulse_patterns(cfg):
+    """(len(PATTERNS), n_win) on/off masks of the stimulus within the response window:
+    single = one pulse of t_stim (the atlas protocol); train = three t_stim pulses
+    4 s apart; long = one 5-s pulse."""
+    t = np.arange(cfg.n_win) * cfg.dt
+    single = t < cfg.t_stim
+    train = np.zeros_like(single)
+    for k in range(3):
+        train |= (t >= 4.0 * k) & (t < 4.0 * k + cfg.t_stim)
+    long = t < 5.0
+    return np.stack([single, train, long]).astype(np.float32)
+
+
 @partial(jax.jit, static_argnames=("level", "cfg"))
-def simulate_responses(p, st, stim_idx, level, cfg, pep_on=1.0, amp_off=None):
+def simulate_responses(p, st, stim_idx, level, cfg, pep_on=1.0, amp_off=None, gap_on=1.0, proto=None):
     """Predicted response matrix (N, S): mean activity change of each neuron
-    over the window following a pulse to neuron stim_idx[s], times readout gain."""
+    over the window following a pulse to neuron stim_idx[s], times readout gain.
+
+    proto (optional, per stimulus column): dict with "amp" (amplitude scale),
+    "pair" (index of a second neuron stimulated simultaneously, -1 = none) and
+    "pattern" (index into PATTERNS).  None = the atlas protocol."""
     N = st.N
     p = tie(st, p)
     zero_I = jnp.zeros(N)
 
     @jax.checkpoint   # rematerialise during backprop: store states only (memory)
     def burn(state, _):
-        return _step(level, p, st, cfg, state, zero_I, pep_on), None
+        return _step(level, p, st, cfg, state, zero_I, pep_on, gap_on), None
     rest, _ = jax.lax.scan(burn, _zero_state(level, N), None, length=cfg.n_burn)
 
-    def window_mean(I_vec):
+    pulses = jnp.asarray(pulse_patterns(cfg))
+
+    def window_mean(I_vec, pulse):
+        """(N,) window mean, or (n_bins, N) bin means when cfg.n_bins > 1."""
         @jax.checkpoint
         def body(carry, t):
             state, acc = carry
-            ns = _step(level, p, st, cfg, state, jnp.where(t < cfg.n_stim, 1.0, 0.0) * I_vec, pep_on)
-            return (ns, acc + _activity(level, p, cfg, ns)), None
-        (_, acc), _ = jax.lax.scan(body, (rest, jnp.zeros(N)), jnp.arange(cfg.n_win))
-        return acc / cfg.n_win
+            ns = _step(level, p, st, cfg, state, pulse[t] * I_vec, pep_on, gap_on)
+            return (ns, acc.at[t // cfg.bin_len].add(_activity(level, p, cfg, ns))), None
+        (_, acc), _ = jax.lax.scan(body, (rest, jnp.zeros((cfg.n_bins, N))), jnp.arange(cfg.n_win))
+        acc = acc / cfg.bin_len
+        return acc[0] if cfg.n_bins == 1 else acc
     # matched no-stimulus control removes any slow drift left after burn-in
-    control = window_mean(jnp.zeros(N))
-    off = jnp.zeros(stim_idx.shape[0]) if amp_off is None else amp_off
-    R = jax.vmap(lambda j, o: window_mean(sp(p["stim"] + o) * jax.nn.one_hot(j, N)) - control)(stim_idx, off).T  # (N, S)
-    return jnp.exp(p["log_gain"])[:, None] * R
+    control = window_mean(jnp.zeros(N), pulses[0])
+    S = stim_idx.shape[0]
+    off = jnp.zeros(S) if amp_off is None else amp_off
+    if proto is None:
+        amp_s, pair, pat = jnp.ones(S), -jnp.ones(S, dtype=jnp.int32), jnp.zeros(S, dtype=jnp.int32)
+    else:
+        amp_s, pair, pat = jnp.asarray(proto["amp"]), jnp.asarray(proto["pair"]), jnp.asarray(proto["pattern"])
+    def one(j, o, a, q, k):     # one_hot(-1) is all zeros, so q = -1 means "no second neuron"
+        return window_mean(a * sp(p["stim"] + o) * (jax.nn.one_hot(j, N) + jax.nn.one_hot(q, N)), pulses[k]) - control
+    R = jax.vmap(one)(stim_idx, off, amp_s, pair, pat)
+    if cfg.n_bins == 1:
+        return jnp.exp(p["log_gain"])[:, None] * R.T                       # (N, S)
+    return jnp.exp(p["log_gain"])[:, None, None] * jnp.transpose(R, (2, 0, 1))   # (N, S, n_bins)
 
 
-def predict(level, p, st, stim_idx, strains, cfg, cols=None):
-    """(n_strain, N, S).  Strain 'unc31' switches peptide release off.
+def predict(level, p, st, stim_idx, strains, cfg, cols=None, proto=None):
+    """(n_strain, N, S).  Strain 'unc31' switches peptide release off; strain
+    'gapless' switches gap junctions off (an unc-7/unc-9-like mutant).
+    proto: optional per-column stimulus protocol (see simulate_responses).
     `cols` (indices into ds.stim) selects per-stimulus efficacy offsets when
     the parameters contain them (pair-holdout protocol)."""
     out = []
@@ -307,20 +349,24 @@ def predict(level, p, st, stim_idx, strains, cfg, cols=None):
         off = p["stim_col"][jnp.asarray(cols)]
     for s in strains:
         pep_on = 0.0 if s == "unc31" else 1.0
+        gap_on = 0.0 if s == "gapless" else 1.0
         if level == "B":
             r = blackbox_forward(p, stim_idx, pep_on)
-            out.append(r if off is None else r * jnp.exp(off)[None, :])
+            if off is not None:
+                r = r * (jnp.exp(off)[None, :] if r.ndim == 2 else jnp.exp(off)[None, :, None])
+            out.append(r)
         else:
-            out.append(simulate_responses(p, st, jnp.asarray(stim_idx), level, cfg, pep_on, off))
+            out.append(simulate_responses(p, st, jnp.asarray(stim_idx), level, cfg, pep_on, off, gap_on, proto))
     return jnp.stack(out)
 
 
 # ------------------------------------------------------------ black box ---
-def init_blackbox(N, key, d=32, n_layers=2, n_heads=4):
+def init_blackbox(N, key, d=32, n_layers=2, n_heads=4, n_bins=1):
     ks = iter(jax.random.split(key, 8 + 6 * n_layers))
     nrm = lambda shape, s: s * jax.random.normal(next(ks), shape)
     p = {"emb": nrm((N, d), 0.3), "e_stim": nrm((d,), 0.3), "e_pep": nrm((d,), 0.3),
-         "out_w": nrm((d,), 0.1), "out_b": jnp.zeros(()), "n_heads": n_heads, "layers": []}
+         "out_w": nrm((d,) if n_bins == 1 else (d, n_bins), 0.1),
+         "out_b": jnp.zeros(() if n_bins == 1 else (n_bins,)), "n_heads": n_heads, "layers": []}
     for _ in range(n_layers):
         p["layers"].append({"qkv": nrm((d, 3 * d), d ** -0.5), "o": nrm((d, d), d ** -0.5),
                             "f1": nrm((d, 2 * d), d ** -0.5), "f2": nrm((2 * d, d), (2 * d) ** -0.5)})
@@ -346,7 +392,8 @@ def blackbox_forward(p, stim_idx, pep_on):
             x = x + (att @ sh(v)).transpose(1, 0, 2).reshape(N, d) @ L["o"]
             x = x + jax.nn.gelu(_ln(x) @ L["f1"]) @ L["f2"]
         return _ln(x) @ p["out_w"] + p["out_b"]
-    return jax.vmap(one)(jnp.asarray(stim_idx)).T
+    out = jax.vmap(one)(jnp.asarray(stim_idx))          # (S, N) or (S, N, n_bins)
+    return jnp.swapaxes(out, 0, 1)
 
 
 def blackbox_count(p):
@@ -355,6 +402,22 @@ def blackbox_count(p):
 
 
 # --------------------------------------------------------------- fitting ---
+def proto_cols(ds, cols):
+    """The dataset's per-column stimulus protocol restricted to `cols`, or None."""
+    pr = getattr(ds, "proto", None)
+    if pr is None:
+        return None
+    cols = np.asarray(cols)
+    return {k: jnp.asarray(np.asarray(v)[cols]) for k, v in pr.items()}
+
+
+def bcast(mask, like):
+    """Append singleton axes to a (strain, N, S) mask so it broadcasts against
+    arrays with trailing time-bin axes."""
+    mask = np.asarray(mask)
+    return mask.reshape(mask.shape + (1,) * (np.ndim(like) - mask.ndim))
+
+
 def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0,
         l2=1e-3, init=None, verbose=200, st=None, tie_classes=True, train_mask=None,
         per_stim_gain=None):
@@ -367,6 +430,10 @@ def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0
         pairs of every stimulus (held-out-pair protocol).  Each stimulus then
         gets an efficacy offset (actuator expression differs across animals).
     """
+    expected = ds.n.shape + ((cfg.n_bins,) if cfg.n_bins > 1 else ())
+    if ds.mean.shape != expected:
+        raise ValueError(f"data shape {ds.mean.shape} does not match SimConfig(n_bins={cfg.n_bins}) -> {expected}; "
+                         "use window-mean data with n_bins=1, or time-binned data with the same n_bins")
     if train_mask is not None:
         train_cols = np.arange(ds.S)
     per_stim_gain = (train_mask is not None) if per_stim_gain is None else per_stim_gain
@@ -375,7 +442,7 @@ def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0
     if init is not None:
         p0 = init
     elif level == "B":
-        p0 = init_blackbox(ds.N, key)
+        p0 = init_blackbox(ds.N, key, n_bins=cfg.n_bins)
     else:
         p0 = init_params(level, st, key, jitter=0.05 if seed < 1000 else 0.3)  # restarts explore more
     static = {}
@@ -385,23 +452,24 @@ def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0
     if per_stim_gain and "stim_col" not in p0:
         p0["stim_col"] = jnp.zeros(ds.S)
     stim_idx = jnp.asarray(ds.stim[train_cols])
+    proto = proto_cols(ds, train_cols)
     y = jnp.asarray(ds.mean[:, :, train_cols], jnp.float32)
     mk = ds.mask() if train_mask is None else (ds.mask() & train_mask)
-    m = jnp.asarray(mk[:, :, train_cols], jnp.float32)
+    m = jnp.asarray(bcast(mk[:, :, train_cols], y), jnp.float32)   # mask, broadcast over time bins
     w = m / (jnp.asarray(ds.var_mean[:, :, train_cols], jnp.float32) + 1e-3)
     w = w / jnp.maximum(jnp.sum(w * y ** 2), 1e-12)   # data loss = relative squared error, O(1)
     strains = ds.strains
     if level == "B":
-        pred0 = np.asarray(predict("B", dict(p0, **static), st, stim_idx, strains, cfg, train_cols))
-        mm = np.asarray(m) > 0
+        pred0 = np.asarray(predict("B", dict(p0, **static), st, stim_idx, strains, cfg, train_cols, proto))
+        mm = np.broadcast_to(np.asarray(m) > 0, pred0.shape)
         scale = np.asarray(y)[mm].std() / (pred0[mm].std() + 1e-12)
         p0["out_w"] = p0["out_w"] * scale * 0.05   # start near the zero-response predictor
         p0["out_b"] = jnp.zeros(())
         lr = lr * 0.1
     if level != "B" and init is None:
         # start at the data's scale: least-squares global readout gain
-        pred0 = np.asarray(predict(level, p0, st, stim_idx, strains, cfg, train_cols))
-        mm = np.asarray(m) > 0
+        pred0 = np.asarray(predict(level, p0, st, stim_idx, strains, cfg, train_cols, proto))
+        mm = np.broadcast_to(np.asarray(m) > 0, pred0.shape)
         num, den = (pred0[mm] * np.asarray(y)[mm]).sum(), (pred0[mm] ** 2).sum()
         if den > 0 and num > 0:
             p0["log_gain"] = p0["log_gain"] + np.log(num / den)
@@ -411,7 +479,7 @@ def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0
     # does not constant-fold large matrices at compile time
     def loss_fn(p, st_, y_, w_, p_ref_):
         q = dict(p, **static)
-        pred = predict(level, q, st_, stim_idx, strains, cfg, train_cols)
+        pred = predict(level, q, st_, stim_idx, strains, cfg, train_cols, proto)
         reg = sum(jnp.sum((a - b) ** 2) for a, b in
                   zip(jax.tree_util.tree_leaves(p), jax.tree_util.tree_leaves(p_ref_)))
         return jnp.sum(w_ * (pred - y_) ** 2) + l2 * reg
@@ -455,6 +523,10 @@ def make_synthetic(ds_template, true_level="L3", seed=0, jitter=0.6, noise_sd=No
                    trials=None, cfg=SimConfig(), coverage=None, peptide_scale=0.5, tie_classes=True):
     """Generate a synthetic worm whose true closed level is known.
 
+    With cfg.n_bins > 1 the responses are time courses (N, S, n_bins) and the
+    per-bin trial noise is sqrt(n_bins) x the window-mean noise, so that
+    data.average_bins(ds) yields exactly window-mean data with the usual noise.
+
     Wiring is taken from `ds_template` (real or random).  Ground-truth
     parameters are a randomly perturbed rung `true_level`; responses to every
     stimulus in both strains are simulated, then trial noise is added with the
@@ -467,19 +539,22 @@ def make_synthetic(ds_template, true_level="L3", seed=0, jitter=0.6, noise_sd=No
     p_true = init_params(true_level, st, jax.random.PRNGKey(seed + 1000), jitter=jitter)
     if "rec" in p_true:
         p_true["rec"] = p_true["rec"] * peptide_scale
-    R = np.asarray(predict(true_level, p_true, st, ds_template.stim, ds_template.strains, cfg))
+    R = np.asarray(predict(true_level, p_true, st, ds_template.stim, ds_template.strains, cfg,
+                           proto=proto_cols(ds_template, np.arange(ds_template.S))))
     if noise_sd is None:
-        noise_sd = 0.45 * R[ds_template.mask()].std()
+        R_win = R if R.ndim == 3 else R.mean(-1)      # calibrate noise on the window mean
+        noise_sd = 0.45 * R_win[ds_template.mask()].std() * np.sqrt(cfg.n_bins)
     n = ds_template.n.copy() if trials is None else np.full_like(ds_template.n, trials)
     if coverage is not None:
         n = n * (rng.random(n.shape) < coverage)
     n[:, ds_template.stim, np.arange(ds_template.S)] = 0
-    noise = rng.normal(size=R.shape) * noise_sd / np.sqrt(np.maximum(n, 1))
-    mean = np.where(n > 0, R + noise, 0.0)
-    var_mean = np.where(n > 0, noise_sd ** 2 / np.maximum(n, 1), 0.0)
+    nb = bcast(n, R)                                   # trial counts, broadcast over time bins
+    noise = rng.normal(size=R.shape) * noise_sd / np.sqrt(np.maximum(nb, 1))
+    mean = np.where(nb > 0, R + noise, 0.0)
+    var_mean = np.broadcast_to(np.where(nb > 0, noise_sd ** 2 / np.maximum(nb, 1), 0.0), R.shape).copy()
     ds = Dataset(ids=ds_template.ids, chem=ds_template.chem, gap=ds_template.gap,
                  sign=ds_template.sign, pep=ds_template.pep, stim=ds_template.stim,
-                 strains=ds_template.strains, mean=mean, var_mean=var_mean, n=n,
+                 strains=ds_template.strains, mean=mean, var_mean=var_mean, n=n, proto=ds_template.proto,
                  meta={"synthetic": True, "true_level": true_level, "seed": seed,
                        "noise_sd": float(noise_sd)})
     ds.meta["truth"] = None

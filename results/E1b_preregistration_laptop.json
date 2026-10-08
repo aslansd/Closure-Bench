@@ -1,0 +1,30 @@
+{
+  "experiment": "E1b timing information (synthetic)",
+  "mode": "laptop",
+  "registered_at": "2026-10-06T09:30:04.432781+00:00",
+  "config": {
+    "N_NEURONS": 60,
+    "REAL_WIRING": true,
+    "TRUTHS": [
+      "L1",
+      "L2",
+      "L3"
+    ],
+    "SEEDS": [
+      1
+    ],
+    "K": 3,
+    "STEPS": 250,
+    "N_BOOT": 1000,
+    "N_BINS": 10,
+    "PEPTIDE_SCALE": 0.5,
+    "protocol": "pairs",
+    "equal_budget": true,
+    "restarts": 3
+  },
+  "hit": "exact recovery: L* == true rung",
+  "rescue_rule": "for truths L2 and L3: binned has more exact hits than window; and binned never deeper than the truth (any truth)",
+  "no_rescue_rule": "for truths L2 and L3: binned has no more exact hits than window",
+  "bias_flag": "binned recovers a rung deeper than the truth",
+  "rule_version": 2
+}

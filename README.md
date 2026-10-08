@@ -40,7 +40,7 @@ source .venv/bin/activate
 jupyter lab
 ```
 
-Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05.
+Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13.
 
 **4. Long runs (Notebooks 02 and 04): run them headless.** The script uses `.venv` automatically; you don't need to activate it.
 
@@ -98,6 +98,14 @@ An Apple Silicon laptop should be similar or faster. Of the rungs, the black box
 | 03 Real data pipeline | atlas → `Dataset`; anatomy vs function; noise ceiling; unc-31 peptide test | CPU, 2 min |
 | 04 E1 on real data | pre-registration, cross-validated ladder, registered decision, compression-cost curve | laptop mode: overnight |
 | 05 E2 substrate transfer | fitted L* on RK4, Brian2 and fixed-point substrates; degeneracy; Lyapunov exponent | laptop mode: ~15 min |
+| 06 E1b timing information | same synthetic trials analysed as window means vs time courses: does timing make L2/L3 detectable? real kernel timing | laptop mode: a few hours |
+| 07 E1c identifiability | optimization vs identifiability; Fisher spectra; ensemble estimator; necessity bracket on real E1 | laptop mode: ~2 h |
+| 08 E1d experimental design | which new interventions would constrain the deeper mechanisms? information-gain screening, synthetic validation, real-data screening | laptop mode: ~3–4 h |
+| 09 E1e calibrated decision rule | one null-calibrated threshold replaces the sufficiency/necessity pair; recovery rates on test worms; 5-s pulse vs more of the same | laptop mode: ~4 h |
+| 10 E3 program vs hardware | does a fixed program keep forecasting spontaneous activity, or does a compact meta-program (or only per-window rewriting) absorb the drift? synthetic validation + real recordings | laptop mode: ~30–60 min (+ real data) |
+| 11 E3b what is the drift? | is drift concentrated in neurons whose behavioral encoding changed? does slow behavioral state explain it (vs time-shifted control)? | laptop mode: ~1–2 min per recording |
+| 12 E3c form of the drift | which restricted update (drives, measurement, gains, low-rank or dense couplings) explains the drift, out of sample, against planted-drift surrogates? do the drives move together? does drift track raw-signal fading? | laptop mode: ~1–2 min per recording (68 recordings: ~1.5–2 h) |
+| 13 E3d wander or return? | do the drives return to set points (OU, homeostasis) or random-walk? can one online error-driven tracker follow the drift? | laptop mode: ~1 min per recording (68 recordings: ~1–1.5 h); reuses Notebook 12's checkpoints for drift detection |
 
 Long runs checkpoint after every fit to `results/`, so re-running resumes where a run stopped. Set `CLOSUREBENCH_RESULTS` to store results elsewhere.
 

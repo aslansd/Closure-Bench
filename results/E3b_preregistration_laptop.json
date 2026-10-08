@@ -1,0 +1,17 @@
+{
+  "experiment": "E3b what is the drift",
+  "mode": "laptop",
+  "registered_at": "2026-10-07T18:24:59.949409+00:00",
+  "config": {
+    "N_SURR": 2,
+    "MAX_FILES": null,
+    "TAUS": [
+      60.0,
+      240.0
+    ],
+    "N_WINDOWS": 8
+  },
+  "A": "Wilcoxon over recordings of diff = mean drift(flagged) - mean drift(other) > 0, p < 0.05; and n.s. on stationary surrogates",
+  "B_specific": "Wilcoxon over recordings of (gap_inst - gap_slow) - (gap_inst - gap_shifted) > 0, p < 0.05",
+  "B_explains": "B_specific and the number of drift-detected recordings with slow behavior <= half of that with instantaneous behavior"
+}
