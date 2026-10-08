@@ -19,4 +19,4 @@ conductance : E2c - conductance-based (shunting) synapse realization of the fitt
 intrinsic   : E2d - slow intrinsic (K+-like) currents in the substrate; timescale separation;
               E1g/E1h - rescaled_l1 (the frozen-gate limit as an L1), simulate_l1_from, true_rest.
 """
-__version__ = "0.18.0"
+__version__ = "0.19.0"

@@ -31,7 +31,8 @@ import optax
 
 LEVELS = ("L0", "L1", "L2", "L3", "L4")
 LAST_FIT_TIMES = []
-N_STATE = {"L0": 1, "L1": 2, "L2": 3, "L3": 4, "L4": 5}  # state variables per neuron
+N_STATE = {"L0": 1, "L1": 2, "L2": 3, "L3": 4, "L4": 5, "L1s": 3}  # state variables per neuron
+# "L1s" (Notebook 22): L1 + ONE global slow current (2 extra numbers: rho, tau_n), not part of LEVELS
 sp = jax.nn.softplus
 TAU_MIN = 0.4   # s; lower bound on fast time constants keeps Euler (dt=0.2) stable
 sig = jax.nn.sigmoid
@@ -172,6 +173,8 @@ def init_params(level, st: Structure, key, jitter=0.1):
              theta=bias + r((N,), 0.3),      # neurons start near their operating point
              bias=bias,
              tau_s=jnp.array(inv_sp(0.2)))
+    if level == "L1s":                   # global slow K+-like current (Notebooks 18-21): rho = 0.9 sig(rho_s)
+        p.update(rho_s=jnp.array(float(np.log(0.05 / 0.85))), tau_ns=jnp.array(inv_sp(10.0 - TAU_MIN)))
     if level in ("L2", "L3", "L4"):
         p.update(gK=jnp.full(N, inv_sp(0.3)) + r((N,), 2.0),
                  th_w=jnp.full(N, 0.0) + r((N,), 0.5),
@@ -189,7 +192,8 @@ def init_params(level, st: Structure, key, jitter=0.1):
     return p
 
 
-NEW_MECHANISM_OFF = {"gK": inv_sp(0.02), "gCa": inv_sp(0.02), "rec": 0.0, "eta": inv_sp(0.02)}
+NEW_MECHANISM_OFF = {"gK": inv_sp(0.02), "gCa": inv_sp(0.02), "rec": 0.0, "eta": inv_sp(0.02),
+                     "rho_s": float(np.log(0.01 / 0.89))}
 
 
 def extend_params(p_lower, level, st: Structure, key):
@@ -221,6 +225,8 @@ def trainable_count(level, st: Structure):
     if level == "L0":
         return c + 5
     c += n_chem + n_gap + 3 * n_cls + 1
+    if level == "L1s":
+        c += 2
     if level in ("L2", "L3", "L4"):
         c += 4 * n_cls + 1
     if level in ("L3", "L4"):
@@ -259,7 +265,12 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
         h = state["h"]
         cur = cur - sp(p["eta"]) * h
         new["h"] = h + dt * (a - p["rho"]) / sp(p["tau_h"])
-    new["v"] = v + dt * (-v + cur) / (TAU_MIN + sp(p["tau"]))
+    if level == "L1s":                   # a share rho of the leak acts through a slow gate u
+        rho = 0.9 * sig(p["rho_s"]); u = state["u"]
+        new["u"] = u + dt * (-u + v) / (TAU_MIN + sp(p["tau_ns"]))
+        new["v"] = v + dt * (-(1 - rho) * v - rho * u + cur) / (TAU_MIN + sp(p["tau"]))
+    else:
+        new["v"] = v + dt * (-v + cur) / (TAU_MIN + sp(p["tau"]))
     new["s"] = state["s"] + dt * (-state["s"] + a) / (TAU_MIN + sp(p["tau_s"]))
     return new
 
@@ -271,7 +282,7 @@ def _activity(level, p, cfg, state):
 
 
 def _zero_state(level, N):
-    names = {"L0": ["v"], "L1": ["v", "s"], "L2": ["v", "s", "w"],
+    names = {"L0": ["v"], "L1": ["v", "s"], "L1s": ["v", "s", "u"], "L2": ["v", "s", "w"],
              "L3": ["v", "s", "w", "p"], "L4": ["v", "s", "w", "p", "h"]}[level]
     return {n: jnp.zeros(N) for n in names}
 
@@ -306,7 +317,10 @@ def simulate_responses(p, st, stim_idx, level, cfg, pep_on=1.0, amp_off=None, ga
 
     @jax.checkpoint   # rematerialise during backprop: store states only (memory)
     def burn(state, _):
-        return _step(level, p, st, cfg, state, zero_I, pep_on, gap_on), None
+        ns = _step(level, p, st, cfg, state, zero_I, pep_on, gap_on)
+        if level == "L1s":               # gate tracks V during burn-in: at stimulus onset it sits at rest
+            ns = dict(ns, u=ns["v"])     # (Notebooks 20-21: a gate frozen before rest acts as a hidden input)
+        return ns, None
     rest, _ = jax.lax.scan(burn, _zero_state(level, N), None, length=cfg.n_burn)
 
     pulses = jnp.asarray(pulse_patterns(cfg))
