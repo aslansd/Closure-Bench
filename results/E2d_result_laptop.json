@@ -1,0 +1,1366 @@
+{
+  "source": "E1 fits (laptop)",
+  "timescale_separation": true,
+  "invisible_hardware": false,
+  "tau_star": {
+    "current|0.1": 20.0,
+    "current|0.3": 1.0,
+    "current|0.6": 0.2,
+    "conductance|0.1": 5.0,
+    "conductance|0.3": 1.0,
+    "conductance|0.6": 0.2
+  },
+  "tau_fit_median": 0.5986601114273071,
+  "rows": [
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0004685793533431953,
+      "dfeve": -0.0008750072706166234
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0005554222291962794,
+      "dfeve": 0.000696911502003128
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.0011800116809224212,
+      "dfeve": 0.007672185254525954
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.002363685561752416,
+      "dfeve": 0.02975804647266278
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.019392039049786217,
+      "dfeve": 0.03212691497363662
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.000510233114072471,
+      "dfeve": 8.03547135900251e-05
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.000908640158606989,
+      "dfeve": 0.004661557582895992
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.006530810515506286,
+      "dfeve": 0.020767065727589462
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.08529042896331897,
+      "dfeve": 0.06023701358617095
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.10959585442355142,
+      "dfeve": 0.03970283537923758
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0005884798007328089,
+      "dfeve": 0.0014945276020503773
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.00189293423477888,
+      "dfeve": 0.010132230625354954
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.04010312686760401,
+      "dfeve": 0.0043605440973663034
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.47232743838385716,
+      "dfeve": -0.6619740391457604
+    },
+    {
+      "fold": 0,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 1.3891825634380497,
+      "dfeve": -1.1539452933650187
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.002341976641519954,
+      "dfeve": -0.005672193166273765
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.002531578127354523,
+      "dfeve": -0.004465623646329742
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.0035404774290127843,
+      "dfeve": 0.0009493529419235536
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.0029574755607255816,
+      "dfeve": 0.02244418281926397
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.006813766684135322,
+      "dfeve": 0.03967968144353484
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0024382388875976405,
+      "dfeve": -0.00492926071144506
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0031583760338174532,
+      "dfeve": -0.0014838524733299385
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.010140774422515854,
+      "dfeve": 0.009159843101967047
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.05625653427949109,
+      "dfeve": 0.07464600322418313
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.18389904445982053,
+      "dfeve": -0.0019207659677145106
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0025998259351290506,
+      "dfeve": -0.003838365367322405
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.004587078097273136,
+      "dfeve": 0.0024059936333067355
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.04566455513293786,
+      "dfeve": -0.015612765818500796
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.5058513856437135,
+      "dfeve": -0.35748611271052055
+    },
+    {
+      "fold": 0,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 31.93944405544464,
+      "dfeve": -51.39660002523218
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00038674108158614964,
+      "dfeve": -0.0048606837888666155
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.00047437004696961906,
+      "dfeve": -0.004395393026672578
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.0010983876655854218,
+      "dfeve": -0.0030699335993644716
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.0027092219516942494,
+      "dfeve": 0.01216731346534039
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.02632380593868534,
+      "dfeve": 0.018212059056432195
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00042755962690540524,
+      "dfeve": -0.004498226516662873
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.000845629441576113,
+      "dfeve": -0.003337944718156405
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.006725174282762992,
+      "dfeve": -0.006757485652251538
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.11197320979528494,
+      "dfeve": -0.042474239772233524
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.112895468482256,
+      "dfeve": -0.19456055088622126
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0005063875118469574,
+      "dfeve": -0.003977643406296805
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0019256520438117888,
+      "dfeve": -0.002586878060798159
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.04040964652169712,
+      "dfeve": -0.06014001690297188
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.4607580602196363,
+      "dfeve": -1.0381485579395462
+    },
+    {
+      "fold": 1,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 1.0980014379350185,
+      "dfeve": -2.6747740738913843
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0022933721263836146,
+      "dfeve": -0.012412703888862286
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0024953713937781803,
+      "dfeve": -0.012207839537451859
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.00351485969190286,
+      "dfeve": -0.01193171501893775
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.0026798588970149313,
+      "dfeve": 0.003560445297662307
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.009343053631357146,
+      "dfeve": 0.02555667640761594
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.002394030702048669,
+      "dfeve": -0.012204161743425312
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.003171458925104103,
+      "dfeve": -0.011851351761826279
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.010505979160992928,
+      "dfeve": -0.01890845452914436
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.06602486102286946,
+      "dfeve": -0.007000275067567063
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.10353777410672856,
+      "dfeve": -0.09557092527985311
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.002564321490829322,
+      "dfeve": -0.011917984595211317
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.004749075969002776,
+      "dfeve": -0.012211997154560117
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.04670438062240607,
+      "dfeve": -0.07861459418678873
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.3816562811175841,
+      "dfeve": -0.8729865862183813
+    },
+    {
+      "fold": 1,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 2.9126209634586697,
+      "dfeve": -4.57800084840175
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00016955552500211069,
+      "dfeve": 0.0005218528742030326
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0002419527032618302,
+      "dfeve": 0.003108816670689629
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.0008425584143482499,
+      "dfeve": 0.014121090603424258
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.0019384992911949345,
+      "dfeve": 0.037648528889646204
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.02322265908731821,
+      "dfeve": 0.009800669616994773
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00020469994880423746,
+      "dfeve": 0.0020565274863761918
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0005891730999619296,
+      "dfeve": 0.009627094310467932
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.006581209606297226,
+      "dfeve": 0.035858540320403365
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.04471746094296931,
+      "dfeve": 0.08032018661594253
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.22036413254136453,
+      "dfeve": -0.17743928013449162
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00027711010919597345,
+      "dfeve": 0.004332190690876647
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.001665941434374337,
+      "dfeve": 0.018675642905965018
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.04269764823515466,
+      "dfeve": 0.008019608814415102
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.6346356646258251,
+      "dfeve": -1.0424742044126316
+    },
+    {
+      "fold": 2,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 14.624446100897504,
+      "dfeve": -33.61708281803787
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0010165105040379698,
+      "dfeve": 0.005523611974188158
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0011812865608378637,
+      "dfeve": 0.007665402656240938
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.002121449222753566,
+      "dfeve": 0.016551544836133525
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.002161383691037275,
+      "dfeve": 0.039666793509573584
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.012722952451624824,
+      "dfeve": 0.03412185475036522
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0011023827719163673,
+      "dfeve": 0.00681024134440078
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0017738783265546898,
+      "dfeve": 0.012995159498221387
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.008982731716507503,
+      "dfeve": 0.031797241278407884
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.03859666312518571,
+      "dfeve": 0.07707183857351807
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.25179623705823356,
+      "dfeve": -0.21141862397728783
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0012520278231789297,
+      "dfeve": 0.008708335948368728
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0032407985553195265,
+      "dfeve": 0.020129446173122623
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.047546972960889465,
+      "dfeve": -0.007574273168935108
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 1.6535807799905338,
+      "dfeve": -1.9701285425735002
+    },
+    {
+      "fold": 2,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 1.97839895343566,
+      "dfeve": -3.0202152751831135
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.000205400554102976,
+      "dfeve": -0.001143933175608125
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.00026595899807565815,
+      "dfeve": 0.00011408239277155285
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.0007202219581307903,
+      "dfeve": 0.005059904003904325
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.002463157495335969,
+      "dfeve": 0.029661066686249682
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.029094197505001508,
+      "dfeve": 0.03511316280173837
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00023401502613771492,
+      "dfeve": -0.00029866591144123156
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0005484017648602358,
+      "dfeve": 0.00321697381688113
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.005008738273158978,
+      "dfeve": 0.011370826060117745
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.0902114709346522,
+      "dfeve": 0.028670909652251608
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.06823224198219095,
+      "dfeve": -0.03387592755771485
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00029233457304737284,
+      "dfeve": 0.0009412373379119598
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.001416870719403915,
+      "dfeve": 0.006966439960275905
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.029255735141941346,
+      "dfeve": -0.01708336353470219
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.24667024256474349,
+      "dfeve": -0.4366284270023827
+    },
+    {
+      "fold": 3,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 1.0870593327958937,
+      "dfeve": -2.111329177397132
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00179621577821326,
+      "dfeve": -0.005749565145837687
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0019682877315610864,
+      "dfeve": -0.004900877042011809
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.0027784888434036984,
+      "dfeve": -0.0015735581251484776
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.0021223785812705684,
+      "dfeve": 0.02285412029206768
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.010897693369212187,
+      "dfeve": 0.050214038158166496
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.001884580981152411,
+      "dfeve": -0.0051485327577011075
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0025475858093919894,
+      "dfeve": -0.0028946096599392623
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.008309272984791264,
+      "dfeve": -0.0003198035072449201
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.050109550902782296,
+      "dfeve": 0.058679762012833314
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.06778888221210977,
+      "dfeve": 0.0656824291970608
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.002034100270824682,
+      "dfeve": -0.004279590580934078
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0038946761229333936,
+      "dfeve": -0.0008648032263310901
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.034867659261641704,
+      "dfeve": -0.0380060701429733
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.30354435540867136,
+      "dfeve": -0.6467246997804467
+    },
+    {
+      "fold": 3,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 2.539176777597015,
+      "dfeve": -5.29003871123786
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00022241456355850996,
+      "dfeve": -0.002042035710158263
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0002832850184333464,
+      "dfeve": -0.0016171135246538793
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.0007567880601072486,
+      "dfeve": 5.6861421995235695e-05
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.002316148043206594,
+      "dfeve": 0.01220309446933443
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.025384833554262062,
+      "dfeve": 0.016432176877154703
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0002509888382060484,
+      "dfeve": -0.0017526658672524231
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0005716609017284342,
+      "dfeve": -0.0007078977182324309
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.005121416660395484,
+      "dfeve": -0.000808580321597252
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.0761033178092208,
+      "dfeve": -0.007070057417418618
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.07982531141912795,
+      "dfeve": -0.023659108753825153
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.00031048783778021995,
+      "dfeve": -0.001346489245206528
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.001457018836184577,
+      "dfeve": -0.00011035868911413171
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.03171967808014558,
+      "dfeve": -0.03218803370150991
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.3848375857061398,
+      "dfeve": -0.5949496428337389
+    },
+    {
+      "fold": 4,
+      "base": "current",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 1.4847705897434087,
+      "dfeve": -1.9287925617380264
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0014034903574082704,
+      "dfeve": -0.006944701916573259
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0015472103441806558,
+      "dfeve": -0.006681871236853043
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.002291714449278159,
+      "dfeve": -0.005692555909014407
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.002037863288829582,
+      "dfeve": 0.006327925225086295
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.1,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.011239946655464295,
+      "dfeve": 0.021857537527260384
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.001476173772532881,
+      "dfeve": -0.006750618138918418
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.0020545446401985263,
+      "dfeve": -0.006198540084171089
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.007606934624245215,
+      "dfeve": -0.008616297637016324
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.047986608576290515,
+      "dfeve": 0.004272091356532393
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.3,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 0.15184915431751922,
+      "dfeve": -0.04849409106375624
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.05,
+      "stable": true,
+      "gap": 0.0016027590001703744,
+      "dfeve": -0.0064880974003030945
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 0.2,
+      "stable": true,
+      "gap": 0.003289678142027652,
+      "dfeve": -0.0062466059021774045
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 1.0,
+      "stable": true,
+      "gap": 0.03589261048210076,
+      "dfeve": -0.0430537967317286
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 5.0,
+      "stable": true,
+      "gap": 0.6227001199644642,
+      "dfeve": -0.9666760857549461
+    },
+    {
+      "fold": 4,
+      "base": "conductance",
+      "rho": 0.6,
+      "tau_n": 20.0,
+      "stable": true,
+      "gap": 9.068455864887882,
+      "dfeve": -10.074228950007393
+    }
+  ]
+}

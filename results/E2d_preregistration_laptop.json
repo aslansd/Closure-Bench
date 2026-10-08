@@ -1,0 +1,45 @@
+{
+  "experiment": "E2d slow intrinsic currents",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T16:24:01.066853+00:00",
+  "source": "E1 fits (laptop)",
+  "config": {
+    "N_COLS": 120,
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "rho": [
+      0.1,
+      0.3,
+      0.6
+    ],
+    "tau_n_s": [
+      0.05,
+      0.2,
+      1.0,
+      5.0,
+      20.0
+    ],
+    "bases": [
+      "current",
+      "conductance"
+    ],
+    "primary": {
+      "rho": 0.3,
+      "base": "conductance"
+    },
+    "v_range_mV": [
+      -70.0,
+      -20.0
+    ],
+    "E_exc": 0.0,
+    "E_inh": -80.0
+  },
+  "pass": "gap/noise < 0.1 and |dFEVE| < 0.05 vs ode, every fold model; unstable = fail",
+  "TIMESCALE_SEPARATION": "primary condition passes at tau_n = 0.05 s and fails at some tau_n >= 1 s",
+  "INVISIBLE_HARDWARE": "primary condition passes at every tau_n"
+}
