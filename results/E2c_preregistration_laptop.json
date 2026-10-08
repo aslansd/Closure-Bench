@@ -1,0 +1,32 @@
+{
+  "experiment": "E2c conductance-based synapses",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T15:14:29.878143+00:00",
+  "source": "E1 fits (laptop)",
+  "config": {
+    "N_COLS": 120,
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "scales": [
+      0.25,
+      0.5,
+      1.0,
+      1.5,
+      2.0
+    ],
+    "v_range_mV": [
+      -70.0,
+      -20.0
+    ],
+    "E_exc": 0.0,
+    "E_inh": -80.0
+  },
+  "pass": "gap/noise < 0.1 and |dFEVE| < 0.05 vs ode (RK4 dt 0.02), every fold model; unstable = fail",
+  "CONDUCTANCE_TRANSFER": "compensated passes at scale 1.0",
+  "NAIVE_TRANSFER": "naive passes at scale 1.0 (secondary)"
+}
