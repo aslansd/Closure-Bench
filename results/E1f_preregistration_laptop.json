@@ -1,0 +1,38 @@
+{
+  "experiment": "E1f slow adaptation vs L1",
+  "mode": "laptop",
+  "registered_at": "2026-10-08T17:16:30.897497+00:00",
+  "source": "E1 fits (laptop)",
+  "config": {
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "rho": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.45,
+      0.6
+    ],
+    "tau_n_s": [
+      0.5,
+      1.0,
+      2.0,
+      5.0,
+      10.0,
+      20.0
+    ],
+    "n_boot": 2000,
+    "strain": "wt"
+  },
+  "selection": "per fold: (rho, tau_n) maximising training-pair FEVE; rho = 0 (L1) included",
+  "ADAPTATION_HELPS": "95% bootstrap CI (stimulated neurons) of held-out FEVE gain over L1 has lower bound > 0",
+  "BEYOND_GAIN": "same against L1 x c (c fitted on training pairs)",
+  "CLOSED_LEVEL_DEEPER": "ADAPTATION_HELPS and BEYOND_GAIN and point gain >= 0.05",
+  "VALID": "on L1-generated null data the procedure's gain CI lower bound <= 0"
+}
