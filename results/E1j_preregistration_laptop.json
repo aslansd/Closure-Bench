@@ -1,0 +1,31 @@
+{
+  "experiment": "E1j E1 re-decided with L1s",
+  "mode": "laptop",
+  "registered_at": "2026-10-09T05:55:21.751073+00:00",
+  "source": "E1 (laptop) + Notebook 22 fits",
+  "ladders": {
+    "original": [
+      "L0",
+      "L1",
+      "L2",
+      "L3",
+      "L4"
+    ],
+    "with_L1s": [
+      "L0",
+      "L1",
+      "L1s",
+      "L2",
+      "L3",
+      "L4"
+    ]
+  },
+  "n_boot": 2000,
+  "rules": {
+    "sufficiency": "closure_decision, threshold 0.05",
+    "necessity": "metrics.necessity",
+    "v4": "calibrated_closure with Notebook 09 deltas {'repeat': 0.0, 'long': 0.0025557642078298222} and delta = 0"
+  },
+  "SAME_FOLDS": "rebuilt L1 held-out predictions match Notebook 04's (max |diff| < 1e-3)",
+  "CLOSED_LEVEL_CHANGES": "any of the three decisions differs between the two ladders (all strains)"
+}

@@ -31,8 +31,8 @@ import optax
 
 LEVELS = ("L0", "L1", "L2", "L3", "L4")
 LAST_FIT_TIMES = []
-N_STATE = {"L0": 1, "L1": 2, "L2": 3, "L3": 4, "L4": 5, "L1s": 3}  # state variables per neuron
-# "L1s" (Notebook 22): L1 + ONE global slow current (2 extra numbers: rho, tau_n), not part of LEVELS
+N_STATE = {"L0": 1, "L1": 2, "L2": 3, "L3": 4, "L4": 5, "L1s": 3, "L0s": 2}  # state variables per neuron
+# "L1s" (Notebook 22) / "L0s" (Notebook 24): L1 / L0 + ONE global slow current (2 extra numbers: rho, tau_n), not part of LEVELS
 sp = jax.nn.softplus
 TAU_MIN = 0.4   # s; lower bound on fast time constants keeps Euler (dt=0.2) stable
 sig = jax.nn.sigmoid
@@ -162,9 +162,11 @@ def init_params(level, st: Structure, key, jitter=0.1):
     ks = iter(jax.random.split(key, 32))
     r = lambda shape, s=1.0: jitter * s * jax.random.normal(next(ks), shape)
     p = {"log_gain": jnp.zeros(N) + r((N,), 0.5), "stim": jnp.array(inv_sp(2.0))}
-    if level == "L0":
+    if level in ("L0", "L0s"):
         p.update(a_exc=jnp.array(0.5), a_inh=jnp.array(-0.5), a_unk=jnp.array(0.0),
                  g_gap=jnp.array(inv_sp(0.3)), tau=jnp.array(inv_sp(0.6)))
+        if level == "L0s":
+            p.update(rho_s=jnp.array(float(np.log(0.05 / 0.85))), tau_ns=jnp.array(inv_sp(10.0 - TAU_MIN)))
         return p
     bias = jnp.full(N, -0.2) + r((N,), 0.5)
     p.update(W=st.chem_init * (1 + r((N, N))) + r((N, N), 0.2) * st.chem_mask,
@@ -222,8 +224,8 @@ def trainable_count(level, st: Structure):
     n_chem = pair(st.chem_mask)
     n_gap = pair(st.gap_mask) // 2
     c = N + 1  # readout gains (per neuron: measurement, never tied) + stimulus amplitude
-    if level == "L0":
-        return c + 5
+    if level in ("L0", "L0s"):
+        return c + 5 + (2 if level == "L0s" else 0)
     c += n_chem + n_gap + 3 * n_cls + 1
     if level == "L1s":
         c += 2
@@ -242,9 +244,13 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
     neuropeptide release (unc-31) and gap junctions (e.g. unc-7/unc-9) off."""
     dt, k = cfg.dt, cfg.k
     v = state["v"]
-    if level == "L0":
+    if level in ("L0", "L0s"):
         W = p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk
         lap = gap_on * (st.gap_norm @ v - st.gap_norm.sum(1) * v)
+        if level == "L0s":               # a share rho of the leak acts through a slow gate u (as in L1s)
+            rho = 0.9 * sig(p["rho_s"]); u = state["u"]
+            dv = (-(1 - rho) * v - rho * u + W @ v + sp(p["g_gap"]) * lap + I) / (TAU_MIN + sp(p["tau"]))
+            return {"v": v + dt * dv, "u": u + dt * (-u + v) / (TAU_MIN + sp(p["tau_ns"]))}
         dv = (-v + W @ v + sp(p["g_gap"]) * lap + I) / (TAU_MIN + sp(p["tau"]))
         return {"v": v + dt * dv}
     a = sig(k * (v - p["theta"]))
@@ -276,13 +282,13 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
 
 
 def _activity(level, p, cfg, state):
-    if level == "L0":
+    if level in ("L0", "L0s"):
         return state["v"]
     return sig(cfg.k * (state["v"] - p["theta"]))
 
 
 def _zero_state(level, N):
-    names = {"L0": ["v"], "L1": ["v", "s"], "L1s": ["v", "s", "u"], "L2": ["v", "s", "w"],
+    names = {"L0": ["v"], "L0s": ["v", "u"], "L1": ["v", "s"], "L1s": ["v", "s", "u"], "L2": ["v", "s", "w"],
              "L3": ["v", "s", "w", "p"], "L4": ["v", "s", "w", "p", "h"]}[level]
     return {n: jnp.zeros(N) for n in names}
 
@@ -318,7 +324,7 @@ def simulate_responses(p, st, stim_idx, level, cfg, pep_on=1.0, amp_off=None, ga
     @jax.checkpoint   # rematerialise during backprop: store states only (memory)
     def burn(state, _):
         ns = _step(level, p, st, cfg, state, zero_I, pep_on, gap_on)
-        if level == "L1s":               # gate tracks V during burn-in: at stimulus onset it sits at rest
+        if level in ("L1s", "L0s"):      # gate tracks V during burn-in: at stimulus onset it sits at rest
             ns = dict(ns, u=ns["v"])     # (Notebooks 20-21: a gate frozen before rest acts as a hidden input)
         return ns, None
     rest, _ = jax.lax.scan(burn, _zero_state(level, N), None, length=cfg.n_burn)

@@ -40,7 +40,7 @@ source .venv/bin/activate
 jupyter lab
 ```
 
-Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20 → 21 → 22 → 23.
+Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20 → 21 → 22 → 23 → 24.
 
 **4. Long runs (Notebooks 02 and 04): run them headless.** The script uses `.venv` automatically; you don't need to activate it.
 
@@ -116,6 +116,7 @@ An Apple Silicon laptop should be similar or faster. Of the rungs, the black box
 | 21 E1h consistent restart | Notebooks 19–20 redone with every model started from its exact resting state; how much do E1's predictions depend on the 30-s burn-in? | laptop mode: ~10–15 min; needs the Notebook 04 fits |
 | 22 E1i fit, don't select | L1 refitted vs `L1s` (L1 + one global slow current) fitted with the same budget, from the selected slow current and from 'nearly off' | laptop mode: ~1–1.5 h (15 gradient fits of 300 steps); needs the Notebook 04 fits and reads Notebook 21's selections |
 | 23 E1j E1 re-decided | E1's sufficiency, necessity and calibrated (v4) rules re-applied with `L1s` inserted between L1 and L2, on E1's own held-out predictions | laptop mode: ~5 min; needs Notebooks 04, 09 and 22 results |
+| 24 E1k slow L0 and black box | does a slow current help the linear L0 (`L0s`) and move E1's closed level? does the black box beat the ladder on wild type by E1's margin (outcome C)? | laptop mode: ~15–30 min (grid + 10 fits of the cheap L0 family); needs Notebooks 04, 09 and 22 results |
 
 Long runs checkpoint after every fit to `results/`, so re-running resumes where a run stopped. Set `CLOSUREBENCH_RESULTS` to store results elsewhere.
 
