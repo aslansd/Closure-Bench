@@ -1,0 +1,35 @@
+{
+  "experiment": "E1k slow current on L0; black box on WT",
+  "mode": "laptop",
+  "registered_at": "2026-10-09T11:27:17.278879+00:00",
+  "source": "E1 (laptop) + Notebook 22 fits",
+  "ladder": [
+    "L0",
+    "L0s",
+    "L1",
+    "L1s",
+    "L2",
+    "L3",
+    "L4"
+  ],
+  "grid": {
+    "rho": [
+      0.05,
+      0.1,
+      0.15,
+      0.2,
+      0.3
+    ],
+    "tau_n": [
+      2.0,
+      5.0,
+      10.0,
+      20.0
+    ]
+  },
+  "steps": 300,
+  "n_boot": 2000,
+  "SLOW_HELPS_L0": "L0s beats L0_refit (both strains), CI lower bound > 0",
+  "CLOSED_LEVEL_CHANGES": "any E1 decision on the extended ladder differs from E1's original (both strains)",
+  "OUTCOME_C_WT": "on WT pairs, 2.5th percentile of FEVE(B) - FEVE(L*) > 0.05 (L* = WT sufficiency decision, extended ladder)"
+}

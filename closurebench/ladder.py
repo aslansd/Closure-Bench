@@ -467,7 +467,8 @@ def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0
         p0 = init_params(level, st, key, jitter=0.05 if seed < 1000 else 0.3)  # restarts explore more
     static = {}
     if level == "B":
-        static["n_heads"] = p0.pop("n_heads")
+        p0 = dict(p0)                                    # never mutate a caller's init
+        static["n_heads"] = int(p0.pop("n_heads"))
     train_cols = np.asarray(train_cols)
     if per_stim_gain and "stim_col" not in p0:
         p0["stim_col"] = jnp.zeros(ds.S)
@@ -479,13 +480,14 @@ def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0
     w = m / (jnp.asarray(ds.var_mean[:, :, train_cols], jnp.float32) + 1e-3)
     w = w / jnp.maximum(jnp.sum(w * y ** 2), 1e-12)   # data loss = relative squared error, O(1)
     strains = ds.strains
-    if level == "B":
+    if level == "B" and init is None:
         pred0 = np.asarray(predict("B", dict(p0, **static), st, stim_idx, strains, cfg, train_cols, proto))
         mm = np.broadcast_to(np.asarray(m) > 0, pred0.shape)
         scale = np.asarray(y)[mm].std() / (pred0[mm].std() + 1e-12)
         p0["out_w"] = p0["out_w"] * scale * 0.05   # start near the zero-response predictor
         p0["out_b"] = jnp.zeros(())
-        lr = lr * 0.1
+    if level == "B":
+        lr = lr * 0.1                              # (0.21: a warm-started B keeps its readout)
     if level != "B" and init is None:
         # start at the data's scale: least-squares global readout gain
         pred0 = np.asarray(predict(level, p0, st, stim_idx, strains, cfg, train_cols, proto))
