@@ -1,0 +1,22 @@
+{
+  "experiment": "E1i fitted slow-current rung vs fitted L1",
+  "mode": "laptop",
+  "registered_at": "2026-10-09T04:54:16.107242+00:00",
+  "source": "E1 fits (laptop)",
+  "config": {
+    "folds": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ],
+    "steps": 300,
+    "lr": 0.02,
+    "n_boot": 2000,
+    "strain": "wt"
+  },
+  "FIT_KEEPS_GAIN": "L1s_sel beats L1_refit on held-out pairs, 95% CI lower bound > 0",
+  "FIT_FINDS_IT": "L1s_off beats L1_refit, CI lower bound > 0",
+  "CLOSED_LEVEL_DEEPER": "FIT_KEEPS_GAIN and L1s_sel - max(L1_refit, E1 fit) >= 0.05"
+}
