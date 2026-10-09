@@ -1,0 +1,28 @@
+{
+  "experiment": "E1l equal-budget refinement of every rung, then E1's rules",
+  "mode": "laptop",
+  "registered_at": "2026-10-09T12:23:13.600649+00:00",
+  "source": "E1 (laptop) fits + Notebooks 22/24 refinements",
+  "rungs": [
+    "L0",
+    "L0s",
+    "L1",
+    "L1s",
+    "L2",
+    "L3",
+    "L4",
+    "B"
+  ],
+  "steps_per_round": 300,
+  "rounds": 2,
+  "lr": 0.02,
+  "n_boot": 2000,
+  "guard": "a round is kept only if it does not lower the model's training-pair FEVE (else the start is kept)",
+  "CONVERGED": "every model's training-pair FEVE (both strains) rises by < 0.01 from round 1 to round 2",
+  "DECISIONS_STABLE": "L*, L_needed and v4 (every delta) on the extended ladder identical after rounds 1 and 2",
+  "VERDICT_L0": "round 2, extended ladder, both strains: L_needed == L0 and v4 == L0 for every delta",
+  "SLOW_HELPS_L0": "round 2: L0s - L0 held-out, CI lower bound > 0",
+  "SLOW_HELPS_L1": "round 2: L1s - L1, CI lower bound > 0",
+  "OUTCOME_C": "round 2, both strains: 2.5th pct of FEVE(B) - FEVE(L*) > 0.05",
+  "OUTCOME_C_WT": "round 2, WT pairs: 2.5th pct of FEVE(B) - FEVE(L*_WT) > 0.05"
+}
