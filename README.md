@@ -40,7 +40,7 @@ source .venv/bin/activate
 jupyter lab
 ```
 
-Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20 → 21 → 22 → 23 → 24 → 25 → 26 → 27 → 28 → 29.
+Open `notebooks/` and use the kernel **Python (closurebench)**. In VS Code, open the folder and select the same kernel, or select `.venv` as the interpreter. Run in this order: 00 → 01 → 03 → 02 → 04 → 05 → 06 → 07 → 08 → 09 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 19 → 20 → 21 → 22 → 23 → 24 → 25 → 26 → 27 → 28 → 29 → 30 → 31.
 
 **4. Long runs (Notebooks 02 and 04): run them headless.** The script uses `.venv` automatically; you don't need to activate it.
 
@@ -122,6 +122,8 @@ An Apple Silicon laptop should be similar or faster. Of the rungs, the black box
 | 27 E1n clean linear family | L0, `L0w` (from that L0) and `L1c` (2 restarts) fitted from scratch on inner-training pairs with early stopping on unseen validation pairs: do synapse-specific weights help a linear network? | laptop mode: ~1.5–4 h (20 fits; checkpointed); needs Notebooks 04, 09 and 25 results |
 | 28 E1o converge, then compare | L0, `L0w` (from the converged L0) and `L1c` fitted to convergence by warm-restarted early-stopped cycles (`ladder.fit_cycles`), then E1's rules | laptop mode: ~2–4 h (15 converged fits, each up to 6 cycles; checkpointed); needs Notebooks 04, 09, 25 and 27 results |
 | 29 E1p converged ladder | E1's final decision: L0, `L1c`, `L0w`, L1, L1s, L2, L3, L4 and the black box fitted cleanly and to convergence (`fit_cycles`; L1 grown from `L1c` via `l1_from_l1c`, then the nested chain), E1's rules and black-box rule | laptop mode: **~4–8 h** (run overnight with `scripts/run_notebook.sh`; checkpointed); needs Notebooks 04, 09, 25 and 28 results |
+| 30 E1q cheapest slow model | `L0s` (linear + slow current) and `L1cs` (compact sigmoid + slow current) fitted to convergence and added to Notebook 29's converged ladder; E1's rules on the complete ladder | laptop mode: ~1–1.5 h (10 converged fits; checkpointed); needs Notebooks 04, 09, 28 and 29 results |
+| 31 E1r ingredients factorial | the last cell of the 2 × 2 × 2 (`L0ws`: linear, per-synapse weights, slow current) fitted to convergence from two starts; factorial effects; E1's final decision on the complete ladder | laptop mode: ~1–1.5 h (10 converged fits; checkpointed); needs Notebooks 04, 09 and 28–30 results |
 
 Long runs checkpoint after every fit to `results/`, so re-running resumes where a run stopped. Set `CLOSUREBENCH_RESULTS` to store results elsewhere.
 

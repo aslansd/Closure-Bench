@@ -1,0 +1,22 @@
+{
+  "experiment": "E1q cheapest slow model: L0s (from converged L0), L1cs (from converged L1c), fit_cycles; complete converged ladder",
+  "mode": "laptop",
+  "registered_at": "2026-10-10T16:34:29.919423+00:00",
+  "source": "E1 (laptop) data and folds; converged L0 / L1c (Notebooks 28-29); Notebook 29's ladder",
+  "cycles": {
+    "CYCLE_STEPS": 1000,
+    "MAX_CYCLES": 6,
+    "EVAL_EVERY": 100,
+    "PATIENCE": 5,
+    "TOL": 0.001
+  },
+  "slow_start": [
+    0.1,
+    10.0
+  ],
+  "n_boot": 2000,
+  "SLOW_HELPS_LINEAR": "L0s - L0, CI lower bound > 0",
+  "SLOW_HELPS_COMPACT": "L1cs - L1c, CI lower bound > 0",
+  "CHEAPEST_SLOW": "fewest-parameter model among L0s, L1cs, L1s whose (model - L1s) CI upper bound >= 0",
+  "CLOSED_FINAL": "sufficiency, necessity, v4 on L0, L0s, L1c, L1cs, L0w, L1, L1s, L2, L3, L4 by parameters; black-box rule"
+}

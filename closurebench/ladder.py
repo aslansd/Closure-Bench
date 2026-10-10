@@ -31,11 +31,13 @@ import optax
 
 LEVELS = ("L0", "L1", "L2", "L3", "L4")
 LAST_FIT_TIMES = []
-N_STATE = {"L0": 1, "L1": 2, "L2": 3, "L3": 4, "L4": 5, "L1s": 3, "L0s": 2, "L0w": 1, "L1c": 2}  # state variables per neuron
+N_STATE = {"L0": 1, "L1": 2, "L2": 3, "L3": 4, "L4": 5, "L1s": 3, "L0s": 2, "L0w": 1, "L1c": 2, "L1cs": 3, "L0ws": 2}  # state variables per neuron
 # "L1s" (Notebook 22) / "L0s" (Notebook 24): L1 / L0 + ONE global slow current (2 extra numbers: rho, tau_n), not part of LEVELS
 # "L0w" / "L1c" (Notebook 26): the 2 x 2 that separates the two things L1 adds to L0 --
 #   L0w = L0's LINEAR dynamics with L1's synapse-resolved weights (class-pair tied, like L1) and per-neuron tau;
 #   L1c = L1's NONLINEAR dynamics with L0's three sign-class weights and one gap conductance.
+# "L1cs" (Notebook 30): L1c + the global slow current of L1s.
+# "L0ws" (Notebook 31): L0w + the global slow current (linear, per-synapse weights, slow) -- the last cell of the 2x2x2.
 LAST_EARLY_STOP = {}
 sp = jax.nn.softplus
 TAU_MIN = 0.4   # s; lower bound on fast time constants keeps Euler (dt=0.2) stable
@@ -166,12 +168,12 @@ def init_params(level, st: Structure, key, jitter=0.1):
     ks = iter(jax.random.split(key, 32))
     r = lambda shape, s=1.0: jitter * s * jax.random.normal(next(ks), shape)
     p = {"log_gain": jnp.zeros(N) + r((N,), 0.5), "stim": jnp.array(inv_sp(2.0))}
-    if level in ("L0", "L0s", "L0w"):
+    if level in ("L0", "L0s", "L0w", "L0ws"):
         p.update(a_exc=jnp.array(0.5), a_inh=jnp.array(-0.5), a_unk=jnp.array(0.0),
                  g_gap=jnp.array(inv_sp(0.3)), tau=jnp.array(inv_sp(0.6)))
-        if level == "L0s":
+        if level in ("L0s", "L0ws"):
             p.update(rho_s=jnp.array(float(np.log(0.05 / 0.85))), tau_ns=jnp.array(inv_sp(10.0 - TAU_MIN)))
-        if level == "L0w":               # per-synapse / per-junction / per-neuron deviations; all zero = exactly L0
+        if level in ("L0w", "L0ws"):     # per-synapse / per-junction / per-neuron deviations; all zero = exactly L0
             p.update(W=jnp.zeros((N, N)), G=jnp.zeros((N, N)), dtau=jnp.zeros(N))
         return p
     bias = jnp.full(N, -0.2) + r((N,), 0.5)
@@ -181,9 +183,11 @@ def init_params(level, st: Structure, key, jitter=0.1):
              theta=bias + r((N,), 0.3),      # neurons start near their operating point
              bias=bias,
              tau_s=jnp.array(inv_sp(0.2)))
-    if level == "L1c":                   # L0's compact wiring (chem_init = 4 x sign x S), L1's neurons
+    if level in ("L1c", "L1cs"):         # L0's compact wiring (chem_init = 4 x sign x S), L1's neurons
         del p["W"], p["G"]
         p.update(a_exc=jnp.array(4.0), a_inh=jnp.array(-4.0), a_unk=jnp.array(1.2), g_gap=jnp.array(inv_sp(1.0)))
+        if level == "L1cs":
+            p.update(rho_s=jnp.array(float(np.log(0.05 / 0.85))), tau_ns=jnp.array(inv_sp(10.0 - TAU_MIN)))
         return p
     if level == "L1s":                   # global slow K+-like current (Notebooks 18-21): rho = 0.9 sig(rho_s)
         p.update(rho_s=jnp.array(float(np.log(0.05 / 0.85))), tau_ns=jnp.array(inv_sp(10.0 - TAU_MIN)))
@@ -236,10 +240,10 @@ def trainable_count(level, st: Structure):
     c = N + 1  # readout gains (per neuron: measurement, never tied) + stimulus amplitude
     if level in ("L0", "L0s"):
         return c + 5 + (2 if level == "L0s" else 0)
-    if level == "L0w":
-        return c + 5 + n_chem + n_gap + n_cls
-    if level == "L1c":
-        return c + 4 + 3 * n_cls + 1
+    if level in ("L0w", "L0ws"):
+        return c + 5 + n_chem + n_gap + n_cls + (2 if level == "L0ws" else 0)
+    if level in ("L1c", "L1cs"):
+        return c + 4 + 3 * n_cls + 1 + (2 if level == "L1cs" else 0)
     c += n_chem + n_gap + 3 * n_cls + 1
     if level == "L1s":
         c += 2
@@ -258,12 +262,17 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
     neuropeptide release (unc-31) and gap junctions (e.g. unc-7/unc-9) off."""
     dt, k = cfg.dt, cfg.k
     v = state["v"]
-    if level == "L0w":                   # coefficient per synapse (sign may flip), conductance per junction, tau per neuron
+    if level in ("L0w", "L0ws"):         # coefficient per synapse (sign may flip), conductance per junction, tau per neuron
         S_all = st.S_exc + st.S_inh + st.S_unk
         W = p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk + p["W"] * st.chem_mask * S_all
         G = sp(p["g_gap"] + 0.5 * (p["G"] + p["G"].T)) * st.gap_norm
         lap = gap_on * (G @ v - G.sum(1) * v)
-        dv = (-v + W @ v + lap + I) / (TAU_MIN + sp(p["tau"] + p["dtau"]))
+        tau = TAU_MIN + sp(p["tau"] + p["dtau"])
+        if level == "L0ws":
+            rho = 0.9 * sig(p["rho_s"]); u = state["u"]
+            dv = (-(1 - rho) * v - rho * u + W @ v + lap + I) / tau
+            return {"v": v + dt * dv, "u": u + dt * (-u + v) / (TAU_MIN + sp(p["tau_ns"]))}
+        dv = (-v + W @ v + lap + I) / tau
         return {"v": v + dt * dv}
     if level in ("L0", "L0s"):
         W = p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk
@@ -275,7 +284,7 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
         dv = (-v + W @ v + sp(p["g_gap"]) * lap + I) / (TAU_MIN + sp(p["tau"]))
         return {"v": v + dt * dv}
     a = sig(k * (v - p["theta"]))
-    if level == "L1c":
+    if level in ("L1c", "L1cs"):
         W = p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk
         G = sp(p["g_gap"]) * st.gap_norm
     else:
@@ -296,7 +305,7 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
         h = state["h"]
         cur = cur - sp(p["eta"]) * h
         new["h"] = h + dt * (a - p["rho"]) / sp(p["tau_h"])
-    if level == "L1s":                   # a share rho of the leak acts through a slow gate u
+    if level in ("L1s", "L1cs"):         # a share rho of the leak acts through a slow gate u
         rho = 0.9 * sig(p["rho_s"]); u = state["u"]
         new["u"] = u + dt * (-u + v) / (TAU_MIN + sp(p["tau_ns"]))
         new["v"] = v + dt * (-(1 - rho) * v - rho * u + cur) / (TAU_MIN + sp(p["tau"]))
@@ -307,7 +316,7 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
 
 
 def _activity(level, p, cfg, state):
-    if level in ("L0", "L0s", "L0w"):
+    if level in ("L0", "L0s", "L0w", "L0ws"):
         return state["v"]
     return sig(cfg.k * (state["v"] - p["theta"]))
 
@@ -315,7 +324,7 @@ def _activity(level, p, cfg, state):
 def _zero_state(level, N):
     names = {"L0": ["v"], "L0s": ["v", "u"], "L1": ["v", "s"], "L1s": ["v", "s", "u"], "L2": ["v", "s", "w"],
              "L3": ["v", "s", "w", "p"], "L4": ["v", "s", "w", "p", "h"],
-             "L0w": ["v"], "L1c": ["v", "s"]}[level]
+             "L0w": ["v"], "L1c": ["v", "s"], "L1cs": ["v", "s", "u"], "L0ws": ["v", "u"]}[level]
     return {n: jnp.zeros(N) for n in names}
 
 
@@ -350,7 +359,7 @@ def simulate_responses(p, st, stim_idx, level, cfg, pep_on=1.0, amp_off=None, ga
     @jax.checkpoint   # rematerialise during backprop: store states only (memory)
     def burn(state, _):
         ns = _step(level, p, st, cfg, state, zero_I, pep_on, gap_on)
-        if level in ("L1s", "L0s"):      # gate tracks V during burn-in: at stimulus onset it sits at rest
+        if level in ("L1s", "L0s", "L1cs", "L0ws"):  # gate tracks V during burn-in: at stimulus onset it sits at rest
             ns = dict(ns, u=ns["v"])     # (Notebooks 20-21: a gate frozen before rest acts as a hidden input)
         return ns, None
     rest, _ = jax.lax.scan(burn, _zero_state(level, N), None, length=cfg.n_burn)
