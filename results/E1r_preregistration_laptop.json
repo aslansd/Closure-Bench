@@ -1,0 +1,26 @@
+{
+  "experiment": "E1r: L0ws (linear, synapse weights, slow) fitted to convergence; 2x2x2 factorial; final E1 decision",
+  "mode": "laptop",
+  "registered_at": "2026-10-10T17:16:38.382151+00:00",
+  "source": "E1 (laptop) data and folds; converged L0w (28), L0s (30); ladder of Notebooks 29-30",
+  "cycles": {
+    "CYCLE_STEPS": 1000,
+    "MAX_CYCLES": 6,
+    "EVAL_EVERY": 100,
+    "PATIENCE": 5,
+    "TOL": 0.001
+  },
+  "slow_start": [
+    0.1,
+    10.0
+  ],
+  "starts": [
+    "L0w + slow (0.1, 10 s)",
+    "L0s + zero deviations"
+  ],
+  "n_boot": 2000,
+  "NONLINEARITY_NEEDED": "L1s - L0ws, CI lower bound > 0 (primary)",
+  "CLOSED_FINAL": "sufficiency, necessity, v4 on L0, L0s, L1c, L1cs, L0w, L0ws, L1, L1s, L2, L3, L4 by parameters; black-box rule",
+  "MINIMAL": "fewest-parameter mechanistic rung with (rung - best rung) CI upper bound >= 0",
+  "SLOW_X_SYNAPSE": "2x2x2 interaction slow current x synapse weights, CI excludes 0"
+}
