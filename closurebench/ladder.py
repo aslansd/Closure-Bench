@@ -31,8 +31,12 @@ import optax
 
 LEVELS = ("L0", "L1", "L2", "L3", "L4")
 LAST_FIT_TIMES = []
-N_STATE = {"L0": 1, "L1": 2, "L2": 3, "L3": 4, "L4": 5, "L1s": 3, "L0s": 2}  # state variables per neuron
+N_STATE = {"L0": 1, "L1": 2, "L2": 3, "L3": 4, "L4": 5, "L1s": 3, "L0s": 2, "L0w": 1, "L1c": 2}  # state variables per neuron
 # "L1s" (Notebook 22) / "L0s" (Notebook 24): L1 / L0 + ONE global slow current (2 extra numbers: rho, tau_n), not part of LEVELS
+# "L0w" / "L1c" (Notebook 26): the 2 x 2 that separates the two things L1 adds to L0 --
+#   L0w = L0's LINEAR dynamics with L1's synapse-resolved weights (class-pair tied, like L1) and per-neuron tau;
+#   L1c = L1's NONLINEAR dynamics with L0's three sign-class weights and one gap conductance.
+LAST_EARLY_STOP = {}
 sp = jax.nn.softplus
 TAU_MIN = 0.4   # s; lower bound on fast time constants keeps Euler (dt=0.2) stable
 sig = jax.nn.sigmoid
@@ -162,11 +166,13 @@ def init_params(level, st: Structure, key, jitter=0.1):
     ks = iter(jax.random.split(key, 32))
     r = lambda shape, s=1.0: jitter * s * jax.random.normal(next(ks), shape)
     p = {"log_gain": jnp.zeros(N) + r((N,), 0.5), "stim": jnp.array(inv_sp(2.0))}
-    if level in ("L0", "L0s"):
+    if level in ("L0", "L0s", "L0w"):
         p.update(a_exc=jnp.array(0.5), a_inh=jnp.array(-0.5), a_unk=jnp.array(0.0),
                  g_gap=jnp.array(inv_sp(0.3)), tau=jnp.array(inv_sp(0.6)))
         if level == "L0s":
             p.update(rho_s=jnp.array(float(np.log(0.05 / 0.85))), tau_ns=jnp.array(inv_sp(10.0 - TAU_MIN)))
+        if level == "L0w":               # per-synapse / per-junction / per-neuron deviations; all zero = exactly L0
+            p.update(W=jnp.zeros((N, N)), G=jnp.zeros((N, N)), dtau=jnp.zeros(N))
         return p
     bias = jnp.full(N, -0.2) + r((N,), 0.5)
     p.update(W=st.chem_init * (1 + r((N, N))) + r((N, N), 0.2) * st.chem_mask,
@@ -175,6 +181,10 @@ def init_params(level, st: Structure, key, jitter=0.1):
              theta=bias + r((N,), 0.3),      # neurons start near their operating point
              bias=bias,
              tau_s=jnp.array(inv_sp(0.2)))
+    if level == "L1c":                   # L0's compact wiring (chem_init = 4 x sign x S), L1's neurons
+        del p["W"], p["G"]
+        p.update(a_exc=jnp.array(4.0), a_inh=jnp.array(-4.0), a_unk=jnp.array(1.2), g_gap=jnp.array(inv_sp(1.0)))
+        return p
     if level == "L1s":                   # global slow K+-like current (Notebooks 18-21): rho = 0.9 sig(rho_s)
         p.update(rho_s=jnp.array(float(np.log(0.05 / 0.85))), tau_ns=jnp.array(inv_sp(10.0 - TAU_MIN)))
     if level in ("L2", "L3", "L4"):
@@ -226,6 +236,10 @@ def trainable_count(level, st: Structure):
     c = N + 1  # readout gains (per neuron: measurement, never tied) + stimulus amplitude
     if level in ("L0", "L0s"):
         return c + 5 + (2 if level == "L0s" else 0)
+    if level == "L0w":
+        return c + 5 + n_chem + n_gap + n_cls
+    if level == "L1c":
+        return c + 4 + 3 * n_cls + 1
     c += n_chem + n_gap + 3 * n_cls + 1
     if level == "L1s":
         c += 2
@@ -244,6 +258,13 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
     neuropeptide release (unc-31) and gap junctions (e.g. unc-7/unc-9) off."""
     dt, k = cfg.dt, cfg.k
     v = state["v"]
+    if level == "L0w":                   # coefficient per synapse (sign may flip), conductance per junction, tau per neuron
+        S_all = st.S_exc + st.S_inh + st.S_unk
+        W = p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk + p["W"] * st.chem_mask * S_all
+        G = sp(p["g_gap"] + 0.5 * (p["G"] + p["G"].T)) * st.gap_norm
+        lap = gap_on * (G @ v - G.sum(1) * v)
+        dv = (-v + W @ v + lap + I) / (TAU_MIN + sp(p["tau"] + p["dtau"]))
+        return {"v": v + dt * dv}
     if level in ("L0", "L0s"):
         W = p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk
         lap = gap_on * (st.gap_norm @ v - st.gap_norm.sum(1) * v)
@@ -254,8 +275,12 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
         dv = (-v + W @ v + sp(p["g_gap"]) * lap + I) / (TAU_MIN + sp(p["tau"]))
         return {"v": v + dt * dv}
     a = sig(k * (v - p["theta"]))
-    W = p["W"] * st.chem_mask
-    G = sp(0.5 * (p["G"] + p["G"].T)) * st.gap_norm   # row sums <= max conductance
+    if level == "L1c":
+        W = p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk
+        G = sp(p["g_gap"]) * st.gap_norm
+    else:
+        W = p["W"] * st.chem_mask
+        G = sp(0.5 * (p["G"] + p["G"].T)) * st.gap_norm   # row sums <= max conductance
     lap = gap_on * (G @ v - G.sum(1) * v)
     cur = p["bias"] + W @ state["s"] + lap + I
     new = {}
@@ -282,14 +307,15 @@ def _step(level, p, st, cfg, state, I, pep_on, gap_on=1.0):
 
 
 def _activity(level, p, cfg, state):
-    if level in ("L0", "L0s"):
+    if level in ("L0", "L0s", "L0w"):
         return state["v"]
     return sig(cfg.k * (state["v"] - p["theta"]))
 
 
 def _zero_state(level, N):
     names = {"L0": ["v"], "L0s": ["v", "u"], "L1": ["v", "s"], "L1s": ["v", "s", "u"], "L2": ["v", "s", "w"],
-             "L3": ["v", "s", "w", "p"], "L4": ["v", "s", "w", "p", "h"]}[level]
+             "L3": ["v", "s", "w", "p"], "L4": ["v", "s", "w", "p", "h"],
+             "L0w": ["v"], "L1c": ["v", "s"]}[level]
     return {n: jnp.zeros(N) for n in names}
 
 
@@ -440,8 +466,16 @@ def bcast(mask, like):
 
 def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0,
         l2=1e-3, init=None, verbose=200, st=None, tie_classes=True, train_mask=None,
-        per_stim_gain=None):
+        per_stim_gain=None, val_mask=None, eval_every=100, patience=3):
     """Fit one rung, all strains jointly.  Returns params, losses.
+
+    Early stopping (0.22, Notebook 26): with `val_mask` (same shape as
+    train_mask, disjoint from it) the validation loss -- the same relative
+    squared error on the validation pairs, without the regulariser -- is
+    evaluated at the start and every `eval_every` steps; fitting stops after
+    `patience` evaluations without improvement and the parameters with the
+    lowest validation loss are returned (`steps` is then the maximum).
+    Details in ladder.LAST_EARLY_STOP.
 
     Two protocols:
       * train_cols  (indices into ds.stim): fit those stimuli completely
@@ -516,18 +550,65 @@ def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0
         u, s = opt.update(g, s, p)
         return optax.apply_updates(p, u), s, l
     p, losses = p0, []
-    global LAST_FIT_TIMES
+    global LAST_FIT_TIMES, LAST_EARLY_STOP
+    es = val_mask is not None
+    if es:
+        if train_mask is None:
+            raise ValueError("early stopping needs the pair protocol (train_mask and val_mask)")
+        if np.any(np.asarray(train_mask) & np.asarray(val_mask)):
+            raise ValueError("val_mask overlaps train_mask")
+        mv = jnp.asarray(bcast((ds.mask() & np.asarray(val_mask))[:, :, train_cols], y), jnp.float32)
+        wv = mv / (jnp.asarray(ds.var_mean[:, :, train_cols], jnp.float32) + 1e-3)
+        wv = wv / jnp.maximum(jnp.sum(wv * y ** 2), 1e-12)
+
+        @jax.jit
+        def vloss(p, st_, y_, wv_):
+            return jnp.sum(wv_ * (predict(level, dict(p, **static), st_, stim_idx, strains, cfg, train_cols, proto) - y_) ** 2)
+        best_v = float(vloss(p0, st, y, wv)); best_p, best_step, bad = p0, 0, 0
+        curve = [(0, best_v)]
     LAST_FIT_TIMES = [time.perf_counter()]      # per-step wall clock (used by config.estimate_runtime)
+    stopped = steps
     for it in range(steps):
         p, state, l = update(p, state, st, y, w, p_ref)
         losses.append(float(l))                 # float() synchronises, so timings are real
         LAST_FIT_TIMES.append(time.perf_counter())
         if not np.isfinite(losses[-1]):
             print(f"  [{level}] non-finite loss at step {it}; stopping")
+            stopped = it + 1
             break
         if verbose and (it % verbose == 0 or it == steps - 1):
             print(f"  [{level}] step {it:5d}  loss {losses[-1]:.5f}")
+        if es and ((it + 1) % eval_every == 0 or it == steps - 1):
+            v = float(vloss(p, st, y, wv)); curve.append((it + 1, v))
+            if np.isfinite(v) and v < best_v - 1e-6:
+                best_v, best_p, best_step, bad = v, p, it + 1, 0
+            else:
+                bad += 1
+            if bad >= patience:
+                stopped = it + 1
+                break
+    if es:
+        LAST_EARLY_STOP = dict(best_step=best_step, stopped_at=stopped, by_patience=bool(bad >= patience),
+                               val_start=curve[0][1], val_best=best_v, curve=curve)
+        p = best_p
     return dict(p, **static), np.array(losses)
+
+
+def l1c_from_l1(p, st):
+    """Warm start for L1c from an L1 fit: L1's (tied) synaptic weights projected
+    by least squares onto L0's three sign classes, its junction conductances
+    replaced by their mean; every neuron parameter kept."""
+    pt = tie(st, p)
+    m = np.asarray(st.chem_mask) > 0
+    A = np.stack([np.asarray(S)[m] for S in (st.S_exc, st.S_inh, st.S_unk)], 1)
+    a = np.linalg.lstsq(A, np.asarray(pt["W"])[m], rcond=None)[0]
+    gm = np.asarray(st.gap_mask) > 0
+    G = np.asarray(sp(0.5 * (pt["G"] + pt["G"].T)))
+    g = float(G[gm].mean()) if gm.any() else 1.0
+    q = {k: v for k, v in p.items() if k not in ("W", "G")}
+    q.update(a_exc=jnp.array(float(a[0])), a_inh=jnp.array(float(a[1])), a_unk=jnp.array(float(a[2])),
+             g_gap=jnp.array(float(inv_sp(max(g, 1e-3)))))
+    return q
 
 
 def description_length(level, ds, params=None, st=None):
