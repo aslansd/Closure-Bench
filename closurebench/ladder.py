@@ -594,6 +594,35 @@ def fit(level, ds, train_cols=None, cfg=SimConfig(), steps=1500, lr=1e-2, seed=0
     return dict(p, **static), np.array(losses)
 
 
+def fit_cycles(level, ds, init, train_mask, val_mask, steps=1000, max_cycles=6, tol=1e-3, eval_every=100,
+               patience=5, **kw):
+    """Fit to convergence by warm restarts (0.23, Notebook 28).
+
+    Notebooks 24-27 showed that one Adam run with early stopping can stop on a
+    plateau that a fresh learning-rate schedule escapes (E1's L0 gained 0.08
+    held-out FEVE from 300 more steps).  Here each cycle is an early-stopped fit
+    (`fit` with val_mask) started from the best parameters so far, with a fresh
+    warm-up / cosine schedule.  A cycle is accepted if it lowers the validation
+    loss by more than `tol`; fitting ends at the first cycle that does not
+    (converged) or after `max_cycles`.  Returns (params, info) with
+    info = dict(cycles=[per-cycle LAST_EARLY_STOP summaries], converged, val_best)."""
+    p = init
+    best_v, cycles, converged = None, [], False
+    for c in range(max_cycles):
+        q, _ = fit(level, ds, train_mask=train_mask, val_mask=val_mask, init=p, steps=steps, eval_every=eval_every,
+                   patience=patience, verbose=0, **kw)
+        es = {k: v for k, v in LAST_EARLY_STOP.items() if k != "curve"}
+        if best_v is None:
+            best_v = es["val_start"]
+        accepted = es["val_best"] < best_v - tol
+        cycles.append(dict(es, cycle=c, accepted=bool(accepted)))
+        if not accepted:
+            converged = True
+            break
+        p, best_v = q, es["val_best"]
+    return p, dict(cycles=cycles, converged=converged, val_best=float(best_v), n_accepted=sum(x["accepted"] for x in cycles))
+
+
 def l1c_from_l1(p, st):
     """Warm start for L1c from an L1 fit: L1's (tied) synaptic weights projected
     by least squares onto L0's three sign classes, its junction conductances
