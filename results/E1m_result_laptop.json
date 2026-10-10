@@ -1,0 +1,253 @@
+{
+  "source": "E1 (laptop) data and folds + Notebook 25 round-2 fits",
+  "early_stopping": {
+    "MAX_STEPS": 3000,
+    "EVAL_EVERY": 100,
+    "PATIENCE": 3
+  },
+  "free_parameters": {
+    "L0": 126,
+    "L1c": 345,
+    "L0w": 982,
+    "L1": 1124
+  },
+  "ladder_by_parameters": [
+    "L0",
+    "L1c",
+    "L0w",
+    "L1"
+  ],
+  "L0_CONVERGED": true,
+  "contrasts": {
+    "RESOLUTION_HELPS_LINEAR": {
+      "contrast": "L0w - L0",
+      "point": -1.5146905840701663e-08,
+      "ci": [
+        -2.313902742467899e-08,
+        -1.0017020882213681e-08
+      ],
+      "holds": false
+    },
+    "RESOLUTION_HELPS_NONLINEAR": {
+      "contrast": "L1 - L1c",
+      "point": -0.021673549678467352,
+      "ci": [
+        -0.09362110137989052,
+        0.05000351967742333
+      ],
+      "holds": false
+    },
+    "NONLINEARITY_HELPS_COMPACT": {
+      "contrast": "L1c - L0",
+      "point": -0.0957364668684848,
+      "ci": [
+        -0.15266344219049024,
+        -0.04910467979923602
+      ],
+      "holds": false
+    },
+    "NONLINEARITY_HELPS_RESOLVED": {
+      "contrast": "L1 - L0w",
+      "point": -0.11741000140004632,
+      "ci": [
+        -0.21757205392301354,
+        -0.03473305421886619
+      ],
+      "holds": false
+    }
+  },
+  "CLOSED_22": {
+    "L_star": "L0",
+    "L_needed": "L0",
+    "v4": {
+      "delta=0": "L0",
+      "delta[repeat]=0.000": "L0",
+      "delta[long]=0.003": "L0"
+    }
+  },
+  "heldout_feve": {
+    "L0": 0.4207521425004225,
+    "L1c": 0.3250156756319377,
+    "L0w": 0.42075212735351664,
+    "L1": 0.3033421259534703,
+    "L0 (NB25 round 2)": 0.4207521425004225
+  },
+  "per_strain": {
+    "wt": {
+      "L0": 0.3743113570738352,
+      "L1c": 0.30524399047456074,
+      "L0w": 0.37431134187822956,
+      "L1": 0.2686627009629524,
+      "L0 (NB25 round 2)": 0.3743113570738352
+    },
+    "unc31": {
+      "L0": 0.5196265755588955,
+      "L1c": 0.36711044518824787,
+      "L0w": 0.5196265605156767,
+      "L1": 0.3771761159093826,
+      "L0 (NB25 round 2)": 0.5196265755588955
+    }
+  },
+  "stopping": {
+    "0/L0": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8363507390022278,
+      "val_best": 0.8363507390022278,
+      "seconds": 30.031493186950684
+    },
+    "0/L1c": {
+      "best_step": 400,
+      "stopped_at": 700,
+      "by_patience": true,
+      "val_start": 0.9983903765678406,
+      "val_best": 0.9041221141815186,
+      "seconds": 128.505686044693
+    },
+    "0/L0w": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.836350679397583,
+      "val_best": 0.836350679397583,
+      "seconds": 102.53176522254944
+    },
+    "0/L1": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.82886803150177,
+      "val_best": 0.82886803150177,
+      "seconds": 89.35700702667236
+    },
+    "1/L0": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8200185298919678,
+      "val_best": 0.8200185298919678,
+      "seconds": 30.68716025352478
+    },
+    "1/L1c": {
+      "best_step": 1600,
+      "stopped_at": 1900,
+      "by_patience": true,
+      "val_start": 1.0330374240875244,
+      "val_best": 0.8908653855323792,
+      "seconds": 197.1892809867859
+    },
+    "1/L0w": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8200185298919678,
+      "val_best": 0.8200185298919678,
+      "seconds": 66.73138904571533
+    },
+    "1/L1": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.7996596097946167,
+      "val_best": 0.7996596097946167,
+      "seconds": 81.39278483390808
+    },
+    "2/L0": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8213423490524292,
+      "val_best": 0.8213423490524292,
+      "seconds": 28.924766063690186
+    },
+    "2/L1c": {
+      "best_step": 1600,
+      "stopped_at": 1900,
+      "by_patience": true,
+      "val_start": 1.0439599752426147,
+      "val_best": 0.8973790407180786,
+      "seconds": 212.29065799713135
+    },
+    "2/L0w": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8213423490524292,
+      "val_best": 0.8213423490524292,
+      "seconds": 72.30131793022156
+    },
+    "2/L1": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8083667755126953,
+      "val_best": 0.8083667755126953,
+      "seconds": 102.91715502738953
+    },
+    "3/L0": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8452264070510864,
+      "val_best": 0.8452264070510864,
+      "seconds": 26.261374950408936
+    },
+    "3/L1c": {
+      "best_step": 3000,
+      "stopped_at": 3000,
+      "by_patience": false,
+      "val_start": 0.9991167783737183,
+      "val_best": 0.8898513317108154,
+      "seconds": 352.11441802978516
+    },
+    "3/L0w": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8452264070510864,
+      "val_best": 0.8452264070510864,
+      "seconds": 73.12263798713684
+    },
+    "3/L1": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8312705755233765,
+      "val_best": 0.8312705755233765,
+      "seconds": 85.49692392349243
+    },
+    "4/L0": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8425608277320862,
+      "val_best": 0.8425608277320862,
+      "seconds": 25.71902108192444
+    },
+    "4/L1c": {
+      "best_step": 1000,
+      "stopped_at": 1300,
+      "by_patience": true,
+      "val_start": 1.0004866123199463,
+      "val_best": 0.9105930328369141,
+      "seconds": 152.04017162322998
+    },
+    "4/L0w": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.8425608277320862,
+      "val_best": 0.8425608277320862,
+      "seconds": 67.66469717025757
+    },
+    "4/L1": {
+      "best_step": 0,
+      "stopped_at": 300,
+      "by_patience": true,
+      "val_start": 0.7983905076980591,
+      "val_best": 0.7983905076980591,
+      "seconds": 88.51734185218811
+    }
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "experiment": "E1m 2x2 (linear/nonlinear x class/synapse weights), early stopping on an inner validation split",
+  "mode": "laptop",
+  "registered_at": "2026-10-10T06:03:15.474064+00:00",
+  "source": "E1 (laptop) data and folds + Notebook 25 round-2 fits",
+  "models": [
+    "L0",
+    "L1c",
+    "L0w",
+    "L1"
+  ],
+  "free_parameters": {
+    "L0": 126,
+    "L1c": 345,
+    "L0w": 982,
+    "L1": 1124
+  },
+  "ladder_by_parameters": [
+    "L0",
+    "L1c",
+    "L0w",
+    "L1"
+  ],
+  "early_stopping": {
+    "MAX_STEPS": 3000,
+    "EVAL_EVERY": 100,
+    "PATIENCE": 3
+  },
+  "val_frac": 0.2,
+  "inner_seed": "100 + fold",
+  "lr": 0.02,
+  "n_boot": 2000,
+  "L0_CONVERGED": "on every fold L0 stopped by patience before MAX_STEPS",
+  "RESOLUTION_HELPS_LINEAR": "L0w - L0 held-out, CI lower bound > 0",
+  "RESOLUTION_HELPS_NONLINEAR": "L1 - L1c, CI lower bound > 0",
+  "NONLINEARITY_HELPS_COMPACT": "L1c - L0, CI lower bound > 0",
+  "NONLINEARITY_HELPS_RESOLVED": "L1 - L0w, CI lower bound > 0",
+  "CLOSED_22": "necessity and v4 (every delta) on the 2x2 ordered by free parameters"
+}
