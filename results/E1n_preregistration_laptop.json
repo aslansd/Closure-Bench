@@ -1,0 +1,38 @@
+{
+  "experiment": "E1n clean early stopping: L0, L0w (from clean L0), L1c (restarts), all from scratch on inner-train pairs",
+  "mode": "laptop",
+  "registered_at": "2026-10-10T06:47:48.156098+00:00",
+  "source": "E1 (laptop) data and folds; fits from scratch",
+  "models": [
+    "L0",
+    "L1c",
+    "L0w"
+  ],
+  "free_parameters": {
+    "L0": 126,
+    "L1c": 345,
+    "L0w": 982,
+    "L1": 1124
+  },
+  "ladder_by_parameters": [
+    "L0",
+    "L1c",
+    "L0w"
+  ],
+  "early_stopping": {
+    "MAX_LIN": 6000,
+    "MAX_NL": 3000,
+    "EVAL_EVERY": 100,
+    "PAT_LIN": 5,
+    "PAT_NL": 3,
+    "RESTARTS_NL": 2
+  },
+  "val_frac": 0.2,
+  "inner_seed": "100 + fold (as Notebook 26)",
+  "lr": 0.02,
+  "n_boot": 2000,
+  "L0_CONVERGED_CLEAN": "every fold: L0 best step > 0 and stopped by patience before MAX_LIN",
+  "RESOLUTION_HELPS_LINEAR": "L0w - L0 held-out (both strains), CI lower bound > 0 (primary)",
+  "NONLINEARITY_HELPS_COMPACT": "L1c - L0, CI lower bound > 0",
+  "CLOSED_CLEAN": "sufficiency, necessity, v4 (every delta) on L0 -> L1c -> L0w"
+}
