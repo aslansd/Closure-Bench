@@ -8,7 +8,8 @@ ladder   : the L0-L4 + B model ladder in JAX, simulation of single-neuron
            stimulation experiments, and fitting (Notebooks 02, 04); slow-current
            rungs L0s / L1s (Notebooks 22-24); warm-started B fits (0.21, Notebook 25);
            the 2 x 2 rungs L0w / L1c, l1c_from_l1 and early stopping in fit (0.22, Notebook 26);
-           fit_cycles: convergence by warm-restarted early-stopped cycles (0.23, Notebook 28).
+           fit_cycles: convergence by warm-restarted early-stopped cycles (0.23, Notebook 28);
+           l1_from_l1c: grow the converged ladder from L1c (0.24, Notebook 29).
 data     : loaders for the C. elegans wiring + signal-propagation atlas, and the
            common Dataset format shared by synthetic and real data (Notebook 03).
 metrics  : noise-ceiling-normalised accuracy (FEVE), description length,
@@ -22,4 +23,4 @@ conductance : E2c - conductance-based (shunting) synapse realization of the fitt
 intrinsic   : E2d - slow intrinsic (K+-like) currents in the substrate; timescale separation;
               E1g/E1h - rescaled_l1 (the frozen-gate limit as an L1), simulate_l1_from, true_rest.
 """
-__version__ = "0.23.0"
+__version__ = "0.24.0"

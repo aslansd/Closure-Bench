@@ -604,7 +604,8 @@ def fit_cycles(level, ds, init, train_mask, val_mask, steps=1000, max_cycles=6, 
     (`fit` with val_mask) started from the best parameters so far, with a fresh
     warm-up / cosine schedule.  A cycle is accepted if it lowers the validation
     loss by more than `tol`; fitting ends at the first cycle that does not
-    (converged) or after `max_cycles`.  Returns (params, info) with
+    (converged) or after `max_cycles`.  With init=None the first cycle is
+    always kept (there is nothing to fall back on).  Returns (params, info) with
     info = dict(cycles=[per-cycle LAST_EARLY_STOP summaries], converged, val_best)."""
     p = init
     best_v, cycles, converged = None, [], False
@@ -614,13 +615,26 @@ def fit_cycles(level, ds, init, train_mask, val_mask, steps=1000, max_cycles=6, 
         es = {k: v for k, v in LAST_EARLY_STOP.items() if k != "curve"}
         if best_v is None:
             best_v = es["val_start"]
-        accepted = es["val_best"] < best_v - tol
+        # from scratch (init None) the first cycle is always kept: there is no earlier model to fall back on
+        accepted = (es["val_best"] < best_v - tol) or p is None
         cycles.append(dict(es, cycle=c, accepted=bool(accepted)))
         if not accepted:
             converged = True
             break
         p, best_v = q, es["val_best"]
     return p, dict(cycles=cycles, converged=converged, val_best=float(best_v), n_accepted=sum(x["accepted"] for x in cycles))
+
+
+def l1_from_l1c(p, st):
+    """Warm start for L1 from an L1c fit (0.24, Notebook 29): L1c's class
+    weights written out per synapse (W = sum_c a_c S_c on the chemical
+    support) and its gap conductance per junction.  L1 ties W and G over class
+    pairs, so the start equals L1c up to that averaging (exact when bilateral
+    partners have equal contact counts)."""
+    q = {k: v for k, v in p.items() if k not in ("a_exc", "a_inh", "a_unk", "g_gap")}
+    W = (p["a_exc"] * st.S_exc + p["a_inh"] * st.S_inh + p["a_unk"] * st.S_unk) * st.chem_mask
+    q.update(W=jnp.asarray(W), G=jnp.full((st.N, st.N), float(p["g_gap"])))
+    return q
 
 
 def l1c_from_l1(p, st):

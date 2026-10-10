@@ -1,0 +1,63 @@
+{
+  "experiment": "E1p whole ladder fitted cleanly and to convergence (fit_cycles), E1's final decision",
+  "mode": "laptop",
+  "registered_at": "2026-10-10T13:07:19.479238+00:00",
+  "source": "E1 (laptop) data and folds; Notebook 28's converged L0 / L0w / L1c",
+  "rungs": [
+    "L0",
+    "L1c",
+    "L0w",
+    "L1",
+    "L1s",
+    "L2",
+    "L3",
+    "L4",
+    "B"
+  ],
+  "free_parameters": {
+    "L0": 126,
+    "L1c": 345,
+    "L0w": 982,
+    "L1": 1124,
+    "L1s": 1126,
+    "L2": 1417,
+    "L3": 1564,
+    "L4": 1711
+  },
+  "ladder_all": [
+    "L0",
+    "L1c",
+    "L0w",
+    "L1",
+    "L1s",
+    "L2",
+    "L3",
+    "L4"
+  ],
+  "ladder_e1": [
+    "L0",
+    "L1",
+    "L2",
+    "L3",
+    "L4"
+  ],
+  "cycles": {
+    "CYCLE_STEPS": 1000,
+    "MAX_CYCLES": 6,
+    "MORE_CYCLES": 4,
+    "EVAL_EVERY": 100,
+    "PATIENCE": 5,
+    "TOL": 0.001
+  },
+  "slow_start": [
+    0.1,
+    10.0
+  ],
+  "val_frac": 0.2,
+  "inner_seed": "100 + fold",
+  "lr": 0.02,
+  "n_boot": 2000,
+  "VERDICT_L0_FINAL": "extended ladder, both strains: L_needed == L0 and v4 == L0 for every delta",
+  "OUTCOME_C": "2.5th pct of FEVE(B) - FEVE(L*) > 0.05 (both strains / WT)",
+  "EQUIVALENT": "rungs whose FEVE difference from L0 has a 95% CI containing 0"
+}
